@@ -1,0 +1,88 @@
+
+// user.schema.ts
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose, { Date, Document } from 'mongoose';
+import { JobType } from './dtos/job-type.dto';
+import { JobTypeSchema } from './job-type.schema';
+
+// Type cho các trường người tạo, cập nhật, xóa
+class UserRef {
+  @Prop()
+  userId: number;
+
+  @Prop()
+  email: string;
+}
+
+@Schema({ timestamps: true })
+export class Job {
+
+  @Prop({ required: true })
+  name: string;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true })
+  companyId: mongoose.Types.ObjectId;
+
+  @Prop({ required: false }) // Mảng kỹ năng tham chiếu
+  skills?: string[];
+
+  @Prop({ required: false })
+  description?: string;
+
+  @Prop({ type: [JobTypeSchema], required: false })
+  jobType?: JobType[]
+  
+  @Prop({ required: true })
+  salary: number;
+
+  @Prop({ required: true })
+  level: string;
+
+  @Prop({ required: true })
+  responsibilities: string;
+
+  @Prop({ required: true })
+  experience: number;
+
+  @Prop({ required: true })
+  hours: string;
+
+  @Prop({ required: true })
+  industry: string;
+
+  @Prop({ required: true, default: 1 })
+  quantity: string;
+
+  @Prop({ required: true })
+  country: string;
+
+  @Prop({ required: true })
+  city: string;
+
+  @Prop({ required: true })
+  location: string;
+
+  @Prop({ type: Date ,required: true })
+  expirationDate: Date;
+
+  @Prop({ type: UserRef, required: false })
+  createdBy?: UserRef;
+
+  @Prop({ type: UserRef, required: false })
+  updatedBy?: UserRef;
+
+  @Prop({ type: UserRef, required: false })
+  deletedBy?: UserRef;
+
+  @Prop({ default: true })
+  isActive: boolean;
+
+  @Prop({ default: false })
+  isDeleted: boolean;
+}
+
+// Tạo kiểu Document
+export type JobDocument = Job & Document;
+
+// Tạo schema
+export const JobSchema = SchemaFactory.createForClass(Job);
