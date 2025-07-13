@@ -40,7 +40,7 @@ export class JobService {
 
     async GetListPagination(queryPagination: JobQueryDto) {
         try {
-            // size
+            // Size
             const skip = (queryPagination.page - 1) * queryPagination.size;
             // Sort
             const sortQuery = {};
@@ -50,10 +50,107 @@ export class JobService {
                     sortQuery[field] = order === "asc" ? 1 : -1;
                 }
             }
+            // Query Params
+            const search = queryPagination?.search;
+            const location = queryPagination?.location;
+            const category = queryPagination?.category;
+            const type = queryPagination?.type?.split('-').join(' ');
+            const datePosted = queryPagination?.datePosted;
+            const experience = queryPagination?.experience;
+            const minSalary = queryPagination?.min;
+            const maxSalary = queryPagination?.max;
+
+            // Search conditions
+            const searchConditions = search
+            ? [
+                { name: { $regex: search, $options: 'i' } },
+                { level: { $regex: search, $options: 'i' } },
+                ]
+            : [];
+
+            // Location conditions
+            const locationConditions = location
+            ? [
+                { country: { $regex: location, $options: 'i' }},
+                { city: { $regex: location, $options: 'i' }},
+                ]
+            : [];
+
+            // Category/Industry condition
+            const categoryCondition = category ? { industry: category } : {};
+
+            // Type condition
+            console.log("type: ", type)
+            const typeCondition = type ? { "jobType.type": { $regex: type, $options: "i" }} : {};
+
+            // Experience condition
+            const experienceCondition = experience ? { experience: { $lte: parseInt(experience) }} : {};
+
+            // Date posted condition (giả sử lọc theo số ngày gần đây)
+            let datePostedCondition = {};
+
+            if (datePosted && datePosted !== "all") {
+                const now = new Date();
+                let fromDate: Date | null = null;
+
+                switch (datePosted) {
+                    case "last-hour":
+                        fromDate = new Date(now.getTime() - 1 * 60 * 60 * 1000); // 1 giờ
+                        break;
+                    case "last-24-hour":
+                        fromDate = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 24 giờ
+                        break;
+                    case "last-7-days":
+                        fromDate = new Date(now); // copy now
+                        fromDate.setDate(fromDate.getDate() - 7); // trừ 7 ngày
+                        break;
+                    case "last-14-days":
+                        fromDate = new Date(now); // copy now
+                        fromDate.setDate(fromDate.getDate() - 14); // trừ 14 ngày
+                        break;
+                    case "last-30-days":
+                        fromDate = new Date(now); // copy now
+                        fromDate.setDate(fromDate.getDate() - 30); // trừ 30 ngày
+                        break;
+                    default:
+                        break;
+                }
+
+                if (fromDate) {
+                    datePostedCondition = {
+                        createdAt: { $gte: fromDate },
+                    };
+                }
+            }
+
+
+            // Salary condition
+            let salaryCondition = {};
+            if (minSalary !== undefined || maxSalary !== undefined) {
+                salaryCondition = {
+                    salary: {
+                    ...(minSalary !== undefined ? { $gte: minSalary } : {}),
+                    ...(maxSalary !== undefined ? { $lte: maxSalary } : {}),
+                    },
+                };
+            }
+
+            // Combine all conditions
+            const combinedQuery = {
+            ...(searchConditions.length ? { $or: searchConditions } : {}),
+            ...(locationConditions.length ? { $or: locationConditions } : {}),
+            ...categoryCondition,
+            ...typeCondition,
+            ...experienceCondition,
+            ...datePostedCondition,
+            ...salaryCondition,
+            };
+
+
 
             const [data, total] = await Promise.all([
                 this.jobModel
-                .find()
+                .find(combinedQuery)
                 .sort(sortQuery)
                 .skip(skip)
                 .limit(queryPagination.size)
@@ -77,6 +174,18 @@ export class JobService {
             console.error('Lỗi kết nối cơ sở dữ liệu:', error.message);
             throw new InternalServerErrorException(
                 'Không thể lấy danh sách công việc vì lỗi kết nối cơ sở dữ liệu'
+            );
+        }
+    }
+
+    async GetById(id: string) {
+        try {
+            const job = this.jobModel.findById(id).exec();
+            return job;
+        } catch (error) {
+            console.error('Lỗi kết nối cơ sở dữ liệu:', error.message);
+            throw new InternalServerErrorException(
+                'Không thể lấy công việc vì lỗi kết nối cơ sở dữ liệu'
             );
         }
     }
@@ -140,7 +249,10 @@ export class JobService {
         try {
             const listCategory = await this.jobModel.find().select('industry').exec();
             console.log("listCategory: ", listCategory)
-            const listCategoryResponse = listCategory.map(instance => instance.industry);
+            let listCategoryResponse: string[] = [];
+            if (listCategory) {
+                listCategoryResponse = listCategory.map(instance => instance.industry);
+            }
             return listCategoryResponse;
         } catch (error) {
             console.error('Lỗi lấy danh sách danh mục công việc:', error.message);

@@ -27,10 +27,13 @@ export class CreateJobDto {
     @IsNotEmpty({message: "Vui lòng nhập trình độ tuyển dụng!"})
     level: string;
 
-    @IsString()
+    @IsArray()
     @IsNotEmpty({message: 'Thêm mô tả trách nhiệm cần thực hiện!'})
-    @Type(() => String)
-    responsibilities: string; 
+    responsibilities: string[]; 
+
+    @IsArray()
+    @IsNotEmpty({message: 'Thêm mô tả kỹ năng và kinh nghiệm cần có!'})
+    skillAndExperience: string[]; 
 
     @IsNotEmpty({message: 'Thêm mô tả kinh nghiệm!'})
     @Type(() => Number)

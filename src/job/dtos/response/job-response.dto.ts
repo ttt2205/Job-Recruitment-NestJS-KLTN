@@ -1,9 +1,14 @@
+import { CompanyResponseDto } from "src/company/dtos/response/company-response.dto";
+
 export class JobResponseDto {
   id: string;
   logo: string;
   jobTitle: string;
-  company: string;
+  company: Partial<CompanyResponseDto> | null;
   location: string;
+  description: string;
+  responsibilities: string[];
+  skillAndExperience: string[];
   time: string;
   salary: number;
   jobType: {
@@ -17,7 +22,8 @@ export class JobResponseDto {
     max: number;
   } | null;
   category: string;
-  created_at: string;
+  datePosted: string;
+  expireDate: string;
   experience: string;
   totalSalary: {
     min: number;
@@ -51,7 +57,7 @@ export class JobResponseDtoBuilder {
         return this;
     }
 
-    withCompany(company: string): this {
+    withCompany(company: Partial<CompanyResponseDto> | null): this {
         this.job.company = company;
         return this;
     }
@@ -78,6 +84,31 @@ export class JobResponseDtoBuilder {
 
     withDestination(destination: { min: number; max: number } | null): this {
         this.job.destination = destination;
+        return this;
+    }
+
+    withDatePosted(datePosted: Date) {
+        this.job.datePosted = datePosted.toLocaleDateString("vi-VN");
+        return this;
+    }
+
+    withExpireDate(expireDate: Date) {
+        this.job.expireDate = expireDate.toLocaleDateString("vi-VN");
+        return this;
+    }
+
+    withDescription(description: string) {
+        this.job.description = description;
+        return this;
+    }
+
+    withResponsibilities(responsibilities: string[]) {
+        this.job.responsibilities = responsibilities;
+        return this;
+    }
+
+    withSkillAndExperience(skillAndExperience: string[]) {
+        this.job.skillAndExperience = skillAndExperience;
         return this;
     }
 

@@ -67,7 +67,7 @@ export class CompanyService {
         }
     }
 
-    async findById(id: string): Promise<Company> {
+    async findById(id: string) {
         let company: Company | null;
       
         try {

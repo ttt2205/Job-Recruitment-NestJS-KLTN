@@ -1,7 +1,7 @@
 
 // user.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Date, Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import { SocilMedia } from '../common/dtos/social-media.dto';
 
 // Type cho các trường người tạo, cập nhật, xóa
@@ -15,6 +15,8 @@ class UserRef {
 
 @Schema({ timestamps: true })
 export class Company {
+  
+  _id: mongoose.Types.ObjectId;
 
   @Prop({ required: true })
   email: string;
@@ -60,6 +62,10 @@ export class Company {
 
   @Prop({ default: false })
   isDeleted: boolean;
+
+  createdAt: Date;
+
+  updatedAt: Date;
 }
 
 // Tạo kiểu Document

@@ -1,7 +1,7 @@
 
 // user.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Date, Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import { JobType } from './dtos/job-type.dto';
 import { JobTypeSchema } from './job-type.schema';
 
@@ -38,8 +38,11 @@ export class Job {
   @Prop({ required: true })
   level: string;
 
-  @Prop({ required: true })
-  responsibilities: string;
+  @Prop({ type: [String], required: true })
+  responsibilities: string[];
+
+  @Prop({ type: [String], required: true })
+  skillAndExperience: string[];
 
   @Prop({ required: true })
   experience: number;
@@ -79,6 +82,10 @@ export class Job {
 
   @Prop({ default: false })
   isDeleted: boolean;
+
+  createdAt: Date;
+
+  updatedAt: Date;
 }
 
 // Tạo kiểu Document
