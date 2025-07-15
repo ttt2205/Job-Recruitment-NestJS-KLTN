@@ -11,6 +11,7 @@ import { CompanyModule } from 'src/company/company.module';
   imports: [
     MongooseModule.forFeature([{ name: Job.name, schema: JobSchema }]),
     CompanyModule
-  ]
+  ],
+  exports: [JobService]
 })
 export class JobModule {}

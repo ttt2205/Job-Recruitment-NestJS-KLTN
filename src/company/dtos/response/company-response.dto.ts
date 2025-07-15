@@ -10,6 +10,7 @@ export class CompanyResponseDto {
   phone: string;
   address: string;
   logo?: string;
+  jobNumber?: number; // Optional field for job count
 
   socialMedias?: {
     platform: string;
@@ -136,6 +137,11 @@ export class CompanyResponseDtoBuilder {
 
   withUpdatedAt(date: Date): this {
     this.company.updatedAt = date;
+    return this;
+  }
+
+  withJobNumber(jobNumber?: number): this {
+    this.company.jobNumber = jobNumber;
     return this;
   }
 

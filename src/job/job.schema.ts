@@ -54,7 +54,7 @@ export class Job {
   industry: string;
 
   @Prop({ required: true, default: 1 })
-  quantity: string;
+  quantity: number;
 
   @Prop({ required: true })
   country: string;

@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Job } from './job.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateJobDto } from './dtos/create-job.dto';
 import { GlobalException } from 'src/CustomExceptions/global.exception';
 import { UpdateJobDto } from './dtos/update-job.dto';
@@ -65,7 +65,7 @@ export class JobService {
             ? [
                 { name: { $regex: search, $options: 'i' } },
                 { level: { $regex: search, $options: 'i' } },
-                ]
+            ]
             : [];
 
             // Location conditions
@@ -73,14 +73,13 @@ export class JobService {
             ? [
                 { country: { $regex: location, $options: 'i' }},
                 { city: { $regex: location, $options: 'i' }},
-                ]
+            ]
             : [];
 
             // Category/Industry condition
             const categoryCondition = category ? { industry: category } : {};
 
             // Type condition
-            console.log("type: ", type)
             const typeCondition = type ? { "jobType.type": { $regex: type, $options: "i" }} : {};
 
             // Experience condition
@@ -272,6 +271,58 @@ export class JobService {
             console.error('Lỗi lấy mức lương cao nhất:', error.message);
             throw new InternalServerErrorException(
                 'Không thể lấy mức lương cao nhất vì lỗi kết nối cơ sở dữ liệu'
+            );
+        }
+    }
+
+    async GetRelatedJobs(id: string, industryQuery: string, countryQuery: string, cityQuery: string) {
+        try {
+            const combinedQuery: any = {
+                _id: { $ne: new Types.ObjectId(id) },
+            };
+
+            if (typeof industryQuery === 'string' && industryQuery.trim() !== '') {
+                combinedQuery.industry = { $regex: industryQuery, $options: 'i' };
+            }
+
+            if (typeof countryQuery === 'string' && countryQuery.trim() !== '') {
+                combinedQuery.country = { $regex: countryQuery, $options: 'i' };
+            }
+
+            if (typeof cityQuery === 'string' && cityQuery.trim() !== '') {
+                combinedQuery.city = { $regex: cityQuery, $options: 'i' };
+            }
+            const relatedJobs = await this.jobModel.find(combinedQuery).exec();
+            console.log("relatedJobs: ", relatedJobs)
+            return relatedJobs;
+        } catch (error) {
+            console.error('Lỗi lấy danh sách công việc liên quan:', error.message);
+            throw new InternalServerErrorException(
+                'Không thể lấy danh sách công việc liên quan vì lỗi kết nối cơ sở dữ liệu'
+            );
+        }
+    }
+
+    async countJobsByCompanyId(companyId: string) {
+        try {
+            const count = await this.jobModel.countDocuments({ companyId: new Types.ObjectId(companyId) }).exec();
+            return count;
+        } catch (error) {
+            console.error(`Lỗi lấy số lượng công việc của companyId=${companyId}:`, error.message);
+            throw new InternalServerErrorException(
+                `Không thể lấy số lượng công việc của companyId=${companyId} vì lỗi kết nối cơ sở dữ liệu`
+            );
+        }
+    }
+
+    async getRelatedJobsByCompanyId(companyId: string) {
+        try {
+            const relatedJobs = await this.jobModel.find({ companyId: new Types.ObjectId(companyId) }).exec();
+            return relatedJobs;
+        } catch (error) {
+            console.error(`Lỗi lấy công việc liên quan bằng companyId=${companyId}:`, error.message);
+            throw new InternalServerErrorException(
+                `Không thể lấy công việc liên quan bằng companyId${companyId} vì lỗi kết nối cơ sở dữ liệu`
             );
         }
     }

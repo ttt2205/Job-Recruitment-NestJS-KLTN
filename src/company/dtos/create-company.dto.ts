@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsArray, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength } from "class-validator";
+import { IsArray, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, ValidateNested } from "class-validator";
 import { SocilMedia } from "../../common/dtos/social-media.dto";
 
 export class CreateCompanyDto {
@@ -48,6 +48,8 @@ export class CreateCompanyDto {
     logo?: string;
 
     @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => SocilMedia)
     @IsOptional()
     socialMedias?: SocilMedia[];
 }

@@ -6,10 +6,15 @@ import { CreateCompanyDto } from './dtos/create-company.dto';
 import { GlobalException } from 'src/CustomExceptions/global.exception';
 import { UpdateCompanyDto } from './dtos/update-company.dto';
 import { QueryPaginationDto } from 'src/common/dtos/query-pagination.dto';
+import { CompanyQueryDto } from './dtos/company-query.dto';
+import { JobService } from 'src/job/job.service';
 
 @Injectable()
 export class CompanyService {
-    constructor(@InjectModel(Company.name) private companyModel: Model<Company>) {}
+    constructor(
+        @InjectModel(Company.name) private companyModel: Model<Company>,
+        private readonly jobService: JobService, // Inject JobService to access job-related methods
+    ) {}
 
     async CreateService(data: CreateCompanyDto) {
         try {
@@ -34,20 +39,84 @@ export class CompanyService {
         }
     }
 
-    async GetListPagination(queryPagination: QueryPaginationDto): Promise<{ data: Company[]; total: number }> {
+    async GetListPagination(queryPagination: CompanyQueryDto) {
         try {
+            // Size
             const skip = (queryPagination.page - 1) * queryPagination.size;
+
+            // Sort
+            const sortQuery = {};
+            if (queryPagination.sort) {
+                const [field, order] = queryPagination.sort.split("_");
+                console.log("field: ", field, " order: ", order);
+                if (field && order) {
+                    sortQuery[field] = order === "asc" ? 1 : -1;
+                }
+            }
+
+            // Filter
+            const search = queryPagination.search;
+            const location = queryPagination.location;
+            const category = queryPagination.category;
+            const foundationDateMin = queryPagination.foundationDateMin;
+            const foundationDateMax = queryPagination.foundationDateMax;
+            const primaryIndustry = queryPagination.primaryIndustry;
+
+            const searchQuery = search ? {
+                $or: [
+                    { name: { $regex: search, $options: "i" } },
+                    { email: { $regex: search, $options: "i" } }
+                ]
+            } : {};
+
+            const locationQuery = location ? {
+                address: { $regex: search, $options: "i" }
+            } : {}
+
+            const categoryQuery = category ? {
+                primaryIndustry: { $regex: search, $options: "i" }
+            } : {};
+
+            const foundationDateQuery = foundationDateMin &&  foundationDateMax ? {
+                foundedIn: { $gte: foundationDateMin, $lte: foundationDateMax }
+            } : {};
+
+            const primaryIndustryQuery = primaryIndustry ? {
+                primaryIndustry: { $regex: primaryIndustry, $options: "i" }
+            } : {};
+
+            // And
+            const combineQuery = {
+                ...searchQuery,
+                ...locationQuery,
+                ...categoryQuery,
+                ...foundationDateQuery,
+                ...primaryIndustryQuery,
+            };
+
+
             const [data, total] = await Promise.all([
                 this.companyModel
-                .find()
-                // .sort(queryPagination.sort)
+                .find(combineQuery)
+                .sort(sortQuery)
                 .skip(skip)
                 .limit(queryPagination.size)
                 .exec(),
                 this.companyModel.countDocuments().exec(),
             ]);
 
-            return { data, total };
+            // Job count for each company
+            const companiesWithJobCount = await Promise.all(
+                data.map(async (company) => {
+                    const jobCount = await this.jobService.countJobsByCompanyId(company._id.toString());
+                    return {
+                        ...company.toObject(),
+                        jobNumber: jobCount, // Add job count to the company object
+                    };
+                })
+            );
+
+            return { data: companiesWithJobCount, total };
         } catch (error) {
             console.error('Lỗi kết nối cơ sở dữ liệu:', error.message);
             throw new InternalServerErrorException(
@@ -69,11 +138,8 @@ export class CompanyService {
 
     async findById(id: string) {
         let company: Company | null;
-      
         try {
-            console.log("companyId: ", id)
             company = await this.companyModel.findOne({ _id: id }).exec();
-            console.log("find by companyId: ", company)
         } catch (error) {
           // Chỉ bắt lỗi MongoDB, lỗi cú pháp, v.v.
           if (error.name === 'CastError') {
@@ -88,6 +154,28 @@ export class CompanyService {
         }
       
         return company;
+    }
+
+    async countJobsByCompanyId(companyId: string): Promise<number> {
+        try {
+            return this.jobService.countJobsByCompanyId(companyId);
+        } catch (error) {
+            console.error('Lỗi đếm số lượng công việc:', error.message);
+            throw new InternalServerErrorException(
+                'Không thể đếm số lượng công việc vì lỗi kết nối cơ sở dữ liệu'
+            );
+        }
+    }
+
+    async getRelatedJobsByCompanyId(companyId: string) {
+        try {
+            return this.jobService.getRelatedJobsByCompanyId(companyId);
+        } catch (error) {
+            console.error('Lỗi đếm số lượng công việc:', error.message);
+            throw new InternalServerErrorException(
+                'Không thể đếm số lượng công việc vì lỗi kết nối cơ sở dữ liệu'
+            );
+        }
     }
     
     async UpdatePartition(id: string, data: UpdateCompanyDto):Promise<Company> {

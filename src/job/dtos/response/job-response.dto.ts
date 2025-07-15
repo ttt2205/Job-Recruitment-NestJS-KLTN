@@ -1,4 +1,4 @@
-import { CompanyResponseDto } from "src/company/dtos/response/company-response.dto";
+import { CompanyResponseDto } from "src/company/dtos/response/company-response.dto"; 
 
 export class JobResponseDto {
   id: string;
@@ -11,6 +11,10 @@ export class JobResponseDto {
   skillAndExperience: string[];
   time: string;
   salary: number;
+  industry: string;
+  quantity: number;
+  country: string;
+  city: string;
   jobType: {
     styleClass: string;
     type: string;
@@ -59,6 +63,26 @@ export class JobResponseDtoBuilder {
 
     withCompany(company: Partial<CompanyResponseDto> | null): this {
         this.job.company = company;
+        return this;
+    }
+
+    withQuantity(quantity: number): this {
+        this.job.quantity = quantity;
+        return this;
+    }
+
+    withIndustry(industry: string): this {
+        this.job.industry = industry;
+        return this;
+    }
+
+    withCountry(country: string): this {
+        this.job.country = country;
+        return this;
+    }
+
+    withCity(city: string): this {
+        this.job.city = city;
         return this;
     }
 
