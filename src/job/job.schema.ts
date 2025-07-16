@@ -17,6 +17,8 @@ class UserRef {
 @Schema({ timestamps: true })
 export class Job {
 
+  _id: mongoose.Types.ObjectId;
+
   @Prop({ required: true })
   name: string;
 
@@ -86,6 +88,8 @@ export class Job {
   createdAt: Date;
 
   updatedAt: Date;
+
+  deletedAt: Date;
 }
 
 // Tạo kiểu Document

@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 import { GlobalException } from 'src/CustomExceptions/global.exception';
 import { UpdateCandidateDto } from './dtos/update-candidate-dto';
 import { QueryPaginationDto } from 'src/common/dtos/query-pagination.dto';
+import { CandidateQueryDto } from './dtos/candidate-query.dto';
 
 @Injectable()
 export class CandidateService {
@@ -34,14 +35,50 @@ export class CandidateService {
         }
     }
 
-    async GetListPagination(queryPagination: QueryPaginationDto): Promise<{ data: Candidate[]; total: number }> {
+    async GetListPagination(queryPagination: CandidateQueryDto): Promise<{ data: Candidate[]; total: number }> {
         try {
             const skip = (queryPagination.page - 1) * queryPagination.size;
+            // Sort
+            const sortQuery = {};
+            if (queryPagination.sort) {
+                const [field, order] = queryPagination.sort.split("_");
+                console.log("field: ", field, " order: ", order);
+                if (field && order) {
+                    sortQuery[field] = order === "asc" ? 1 : -1;
+                }
+            }
+            // Combine query with pagination and sorting
+            const experienceQuery = queryPagination.experience ? { experience: { $lte: queryPagination.experience } } : {};
+            const searchQuery = queryPagination.search ? { name: { $regex: queryPagination.search, $options: 'i' } } : {};
+            const locationQuery = queryPagination.location ? { location: { $regex: queryPagination.location, $options: 'i' } } : {};
+            const industryQuery = queryPagination.industry ? { industry: { $regex: queryPagination.industry, $options: 'i' } } : {};
+            const genderQuery = queryPagination.gender ? { gender: { $regex: queryPagination.gender, $options: 'i' } } : {};
+
+            let educationQuery = {};
+            if (queryPagination.education === 'university') {
+                educationQuery = { educationLevel: { $regex: 'Đại học', $options: 'i' } };
+            } else if (queryPagination.education === 'college') {
+                educationQuery = { educationLevel: { $regex: 'Cao đẳng', $options: 'i' } };
+            } else if (queryPagination.education === 'other') {
+                educationQuery = {
+                    educationLevel: { $nin: ['Đại học', 'Cao đẳng'] }, // "not in"
+                };
+            }
+
+
+            const combinedQuery = {
+                ...experienceQuery,
+                ...searchQuery,
+                ...locationQuery,
+                ...industryQuery,
+                ...genderQuery,
+                ...educationQuery
+            }
 
             const [data, total] = await Promise.all([
                 this.candidateModel
-                .find()
-                .sort(queryPagination.sort)
+                .find(combinedQuery)
+                .sort(sortQuery)
                 .skip(skip)
                 .limit(queryPagination.size)
                 .exec(),
@@ -115,6 +152,23 @@ export class CandidateService {
             console.error('Lỗi cập nhật ứng viên:', error.message);
             throw new InternalServerErrorException(
                 'Không thể cập nhật ứng viên vì lỗi kết nối cơ sở dữ liệu'
+            );
+        }
+    }
+
+    async GetListIndustryOfCandidate() {
+        try {
+            const industries = await this.candidateModel.distinct('industry').exec();
+            return industries;
+        } catch (error) {
+            // Nếu lỗi đã là HttpException (gồm cả GlobalException) thì ném lại
+            if (error instanceof HttpException) {
+                throw error;
+            }
+
+            console.error('Lỗi lấy danh sách danh mục của các ứng viên:', error.message);
+            throw new InternalServerErrorException(
+                'Không thể lấy danh sách danh mục của ứng viên vì lỗi kết nối cơ sở dữ liệu'
             );
         }
     }

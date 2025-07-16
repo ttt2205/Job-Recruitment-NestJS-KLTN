@@ -16,6 +16,8 @@ class UserRef {
 @Schema({ timestamps: true })
 export class Candidate {
 
+  _id: mongoose.Types.ObjectId;
+
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   userId: mongoose.Types.ObjectId;
   
@@ -24,6 +26,9 @@ export class Candidate {
 
   @Prop({ type: Date, required: false })
   age?: Date;
+
+  @Prop({ required: false })
+  industry?: string; // == category
 
   @Prop({ required: false })
   skills?: string[];
@@ -44,7 +49,7 @@ export class Candidate {
   description?: string;
 
   @Prop({ required: false })
-  experience?: string;
+  experience?: number;
 
   @Prop({ required: false })
   currentSalary?: string;
@@ -75,6 +80,12 @@ export class Candidate {
 
   @Prop({ default: false })
   isDeleted: boolean;
+
+  createdAt: Date;
+
+  updatedAt: Date;
+
+  deletedAt: Date;
 }
 
 // Tạo kiểu Document

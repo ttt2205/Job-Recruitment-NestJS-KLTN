@@ -17,6 +17,10 @@ export class CreateCandidateDto {
     @IsDate({message: "Định dạng ngày sinh không hợp lệ!"})
     age?: Date;
 
+    @IsOptional()
+    @IsString({message: "Ngành nghề không hợp lệ!"})
+    industry?: string; // == category
+
     @IsArray()
     @IsOptional()
     skills?: string[];
