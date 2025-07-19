@@ -7,10 +7,14 @@ import { GlobalException } from 'src/CustomExceptions/global.exception';
 import { UpdateCandidateDto } from './dtos/update-candidate-dto';
 import { QueryPaginationDto } from 'src/common/dtos/query-pagination.dto';
 import { CandidateQueryDto } from './dtos/candidate-query.dto';
+import { CandidateAboutService } from 'src/candidate-about/candidate-about.service';
 
 @Injectable()
 export class CandidateService {
-    constructor(@InjectModel(Candidate.name) private candidateModel: Model<Candidate>) {}
+    constructor(
+        @InjectModel(Candidate.name) private candidateModel: Model<Candidate>,
+        private readonly candidateAboutService: CandidateAboutService
+    ) {}
 
     async CreateService(data: CreateCandidateDto) {
         try {
@@ -67,6 +71,7 @@ export class CandidateService {
 
 
             const combinedQuery = {
+                isDeleted: false, // Chỉ lấy những ứng viên chưa bị xóa
                 ...experienceQuery,
                 ...searchQuery,
                 ...locationQuery,
@@ -169,6 +174,26 @@ export class CandidateService {
             console.error('Lỗi lấy danh sách danh mục của các ứng viên:', error.message);
             throw new InternalServerErrorException(
                 'Không thể lấy danh sách danh mục của ứng viên vì lỗi kết nối cơ sở dữ liệu'
+            );
+        }
+    }
+
+    async getCandidateById(id: string): Promise<Candidate> {
+        try {
+            const candidate = await this.candidateModel.findById(id).exec();
+            if (!candidate) {
+                throw new NotFoundException(`Không tìm thấy ứng viên với id: ${id}`);
+            }
+            return candidate;
+        } catch (error) {
+            // Nếu lỗi đã là HttpException (gồm cả GlobalException) thì ném lại
+            if (error instanceof HttpException) {
+                throw error;
+            }
+
+            console.error('Lỗi kết nối cơ sở dữ liệu:', error.message);
+            throw new InternalServerErrorException(
+                'Không thể lấy thông tin ứng viên vì lỗi kết nối cơ sở dữ liệu'
             );
         }
     }

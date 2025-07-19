@@ -9,6 +9,7 @@ import { CandidateAboutController } from './candidate-about.controller';
     imports: [
       MongooseModule.forFeature([{ name: CandidateAbout.name, schema: CandidateAboutSchema }])
     ],
-    controllers: [CandidateAboutController]
+    controllers: [CandidateAboutController],
+    exports: [CandidateAboutService]
 })
 export class CandidateAboutModule {}

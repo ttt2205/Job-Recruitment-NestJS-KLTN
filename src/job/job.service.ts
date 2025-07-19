@@ -246,13 +246,9 @@ export class JobService {
 
     async GetListCategory() {
         try {
-            const listCategory = await this.jobModel.find().select('industry').exec();
+            const listCategory = await this.jobModel.find().distinct('industry').exec();
             console.log("listCategory: ", listCategory)
-            let listCategoryResponse: string[] = [];
-            if (listCategory) {
-                listCategoryResponse = listCategory.map(instance => instance.industry);
-            }
-            return listCategoryResponse;
+            return listCategory || [];
         } catch (error) {
             console.error('Lỗi lấy danh sách danh mục công việc:', error.message);
             throw new InternalServerErrorException(

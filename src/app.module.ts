@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { CandidateModule } from './candidate/candidate.module';
 import { CandidateAboutModule } from './candidate-about/candidate-about.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     AuthModule,
     CandidateModule,
     CandidateAboutModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

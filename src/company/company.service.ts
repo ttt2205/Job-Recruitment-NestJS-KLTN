@@ -70,11 +70,11 @@ export class CompanyService {
             } : {};
 
             const locationQuery = location ? {
-                address: { $regex: search, $options: "i" }
+                address: { $regex: location, $options: "i" }
             } : {}
 
             const categoryQuery = category ? {
-                primaryIndustry: { $regex: search, $options: "i" }
+                primaryIndustry: { $regex: category, $options: "i" }
             } : {};
 
             const foundationDateQuery = foundationDateMin &&  foundationDateMax ? {

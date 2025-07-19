@@ -1,5 +1,6 @@
 export class CandidateResponseDto {
   id: string;
+  userId: string;
   avatar: string;
   name: string;
   designation: string;
@@ -11,6 +12,15 @@ export class CandidateResponseDto {
   createdAt: string;
   experience: number;
   qualification: string;
+  age: number;
+  currentSalary?: string;
+  expectSalary?: string;
+  description?: string;
+  language?: string[];
+  socialMedias?: {
+    platform: string;
+    url: string;
+  }[];
 
   static builder(): CandidateResponseDtoBuilder {
     return new CandidateResponseDtoBuilder();
@@ -26,6 +36,11 @@ export class CandidateResponseDtoBuilder {
 
   withId(id: string): this {
     this.candidate.id = id;
+    return this;
+  }
+
+  withUserId(userId: string): this {
+    this.candidate.userId = userId;
     return this;
   }
 
@@ -69,8 +84,12 @@ export class CandidateResponseDtoBuilder {
     return this;
   }
 
-  withCreatedAt(createdAt: string): this {
-    this.candidate.createdAt = createdAt;
+  withCreatedAt(createdAt: Date): this {
+    this.candidate.createdAt = createdAt.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
     return this;
   }
 
@@ -81,6 +100,36 @@ export class CandidateResponseDtoBuilder {
 
   withQualification(qualification: string): this {
     this.candidate.qualification = qualification;
+    return this;
+  }
+
+  withAge(age: Date | null): this {
+    this.candidate.age = age ? new Date().getFullYear() - age.getFullYear() : 0;
+    return this;
+  }
+
+  withCurrentSalary(currentSalary: string): this {
+    this.candidate.currentSalary = currentSalary;
+    return this;
+  }
+
+  withExpectSalary(expectSalary: string): this {
+    this.candidate.expectSalary = expectSalary;
+    return this;
+  }
+
+  withDescription(description: string): this {
+    this.candidate.description = description;
+    return this;
+  }
+
+  withLanguage(language: string[]): this {
+    this.candidate.language = language;
+    return this;
+  }
+
+  withSocialMedias(socialMedias?: { platform: string; url: string }[]): this {
+    this.candidate.socialMedias = socialMedias;
     return this;
   }
 

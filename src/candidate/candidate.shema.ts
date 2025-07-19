@@ -1,7 +1,7 @@
 
 // user.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Date, Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import { SocilMedia } from 'src/common/dtos/social-media.dto';
 
 // Type cho các trường người tạo, cập nhật, xóa

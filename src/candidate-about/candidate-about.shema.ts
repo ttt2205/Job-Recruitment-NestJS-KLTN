@@ -6,6 +6,8 @@ import mongoose, { Document } from 'mongoose';
 @Schema({ timestamps: true })
 export class CandidateAbout {
 
+  _id: mongoose.Types.ObjectId;
+
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   userId: mongoose.Types.ObjectId;
 
@@ -24,8 +26,9 @@ export class CandidateAbout {
   @Prop({ required: false })
   text?: string;
 
-  @Prop({ default: false })
-  isDeleted: boolean;
+  createdAt: Date;
+
+  updatedAt: Date;
 }
 
 // Tạo kiểu Document

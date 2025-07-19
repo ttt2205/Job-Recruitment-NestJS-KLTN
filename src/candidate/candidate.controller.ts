@@ -28,12 +28,14 @@ export class CandidateController {
                 .withTags(candidate.skills || [])
                 .withCategory(candidate.industry || '')
                 .withGender(candidate.gender || '')
+                .withSocialMedias(candidate.socialMedias || [])
+                .withCreatedAt(candidate.createdAt)
                 .build();
         }));
         }
         return {
             statusCode: HttpStatus.OK,
-            message: 'Lấy danh sách ứng viên phân trang thành công!',
+            message: 'Lấy danh sách hồ sơ ứng viên phân trang thành công!',
             results: responseCandidateDtos || [],
             meta: {
               totalItems: total,
@@ -42,6 +44,38 @@ export class CandidateController {
               totalPages: Math.ceil(total / queryPagination.size),  
             },
           };
+    }
+
+    @Get('details/:id')
+    @HttpCode(HttpStatus.OK)
+    async GetCandidateById(@Param('id') id: string) {
+        const candidate = await this.candidateService.getCandidateById(id);
+        const candidateResponseDto = CandidateResponseDto.builder()
+            .withId(candidate._id.toString())
+            .withUserId(candidate.userId.toString())
+            .withAvatar(candidate.avatar || '')
+            .withName(candidate.name)
+            .withAge(candidate.age || null)
+            .withDesignation(candidate.designation || '')
+            .withLocation(candidate.location || '')
+            .withHourlyRate(candidate.hourlyRate || 0)
+            .withTags(candidate.skills || [])
+            .withCategory(candidate.industry || '')
+            .withExperience(candidate.experience || 0)
+            .withQualification(candidate.educationLevel || '')
+            .withGender(candidate.gender || '')
+            .withCreatedAt(candidate.createdAt)
+            .withDescription(candidate.description || '')
+            .withCurrentSalary(candidate.currentSalary || '')
+            .withExpectSalary(candidate.expectSalary || '')
+            .withLanguage(candidate.language || [])
+            .withSocialMedias(candidate.socialMedias || [])
+            .build();
+        return {
+            statusCode: HttpStatus.OK,
+            message: "Lấy hồ sơ ứng viên theo id thành công!",
+            data: candidateResponseDto || {},
+        }
     }
 
     @Get('get-list')
