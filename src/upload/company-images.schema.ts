@@ -12,7 +12,7 @@ export class CompanyImage {
   companyId: mongoose.Types.ObjectId;
   
   @Prop({ required: true })
-  url: string;
+  filename: string;
 }
 
 // Tạo kiểu Document

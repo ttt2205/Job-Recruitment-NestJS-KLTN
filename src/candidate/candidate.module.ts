@@ -11,6 +11,7 @@ import { CandidateAboutModule } from 'src/candidate-about/candidate-about.module
   imports: [
     MongooseModule.forFeature([{ name: Candidate.name, schema: CandidateSchema }]),
     CandidateAboutModule // Importing CandidateAboutModule to use its services
-  ]
+  ],
+  exports: [CandidateService]
 })
 export class CandidateModule {}

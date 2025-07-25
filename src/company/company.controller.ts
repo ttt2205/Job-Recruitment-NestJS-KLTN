@@ -130,6 +130,39 @@ export class CompanyController {
         }
     }
 
+    @Get('details/user/:id')
+    @HttpCode(HttpStatus.OK)
+    async GetCompanyByUserId(@Param('id') id: string) {
+        const company = await this.companyService.getCompanyByUseIdNullable(id);
+        let companyResponse: Partial<CompanyResponseDto> | null = null;
+        if (company) {
+            const jobCount = await this.companyService.countJobsByCompanyId(id);
+            companyResponse = CompanyResponseDto.builder()
+                            .withId(company._id.toString())
+                            .withEmail(company.email)
+                            .withName(company.name)
+                            .withUserId(company.userId.toString())
+                            .withPrimaryIndustry(company.primaryIndustry)
+                            .withSize(company.size)
+                            .withFoundedIn(company.foundedIn)
+                            .withDescription(company.description)
+                            .withPhone(company.phone)
+                            .withAddress(company.address)
+                            .withJobNumber(jobCount)
+                            .withLogo(company.logo)
+                            .withSocialMedias(company.socialMedias)
+                            .withCreatedBy(company.createdBy)
+                            .withUpdatedBy(company.updatedBy)
+                            .withDeletedBy(company.deletedBy)
+                            .build();
+        }
+        return {
+            statusCode: HttpStatus.OK,
+            message: "Lấy thông tin công ty thành công!",
+            data: companyResponse || {},
+        }
+    }
+
     @Get('related-jobs/:companyId')
     @HttpCode(HttpStatus.OK)
     async GetRelatedJobs(@Param('companyId') companyId: string) {

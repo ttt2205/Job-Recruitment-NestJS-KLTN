@@ -1,6 +1,7 @@
 export class CandidateResponseDto {
   id: string;
   userId: string;
+  email: string;
   avatar: string;
   name: string;
   designation: string;
@@ -41,6 +42,11 @@ export class CandidateResponseDtoBuilder {
 
   withUserId(userId: string): this {
     this.candidate.userId = userId;
+    return this;
+  }
+
+  withEmail(email: string): this {
+    this.candidate.email = email;
     return this;
   }
 

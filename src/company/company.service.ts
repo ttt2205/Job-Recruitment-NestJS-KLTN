@@ -156,6 +156,15 @@ export class CompanyService {
         return company;
     }
 
+    async getCompanyByUseIdNullable(id: string): Promise<Company | null> {
+        try {
+            return await this.companyModel.findOne({userId: id}).exec();
+        } catch (error) {
+            console.error("Lối DB khi lấy thông tin công ty: ", error);
+            return null;
+        }
+    }
+
     async countJobsByCompanyId(companyId: string): Promise<number> {
         try {
             return this.jobService.countJobsByCompanyId(companyId);

@@ -11,7 +11,7 @@ export class CandidateImage {
   userId: mongoose.Types.ObjectId;
   
   @Prop({ required: true })
-  url: string;
+  filename: string;
 }
 
 // Tạo kiểu Document

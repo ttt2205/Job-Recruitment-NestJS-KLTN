@@ -12,14 +12,27 @@ import { CandidateModule } from './candidate/candidate.module';
 import { CandidateAboutModule } from './candidate-about/candidate-about.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UploadModule } from './upload/upload.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import authConfig from './auth/config/auth.config';
+
+const ENV = process.env.NODE_ENV;
+const envFilePath = !ENV ? `.env` : `.env.${ENV}`;
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true, // Biến môi trường có thể sử dụng toàn cục
+      envFilePath,
+      load: [authConfig]
+    }),
+
     // 1️⃣ Đặt Mongoose cấu hình đầu tiên
     MongooseModule.forRootAsync({
-      useFactory: () => ({
-        uri: 'mongodb://localhost:27017',
-        dbName: 'job-recruitment',
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGO_URI'),
+        dbName: configService.get<string>('MONGO_DB_NAME'),
       }),
     }),
 

@@ -197,4 +197,13 @@ export class CandidateService {
             );
         }
     }
+
+    async getCandidateByUseIdNullable(id: string): Promise<Candidate | null> {
+        try {
+            return await this.candidateModel.findOne({ userId: id }).exec();
+        } catch (error) {
+            console.error('Lỗi DB khi lấy ứng viên:', error.message);
+            return null;
+        }
+    }
 }

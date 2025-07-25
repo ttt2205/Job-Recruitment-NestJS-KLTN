@@ -4,6 +4,8 @@ import { UploadService } from './upload.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CandidateImage, CandidateImageSchema } from './candidate-images.shema';
 import { CompanyImage, CompanyImageSchema } from './company-images.schema';
+import { CompanyModule } from 'src/company/company.module';
+import { CandidateModule } from 'src/candidate/candidate.module';
 
 @Module({
   controllers: [UploadController],
@@ -13,6 +15,8 @@ import { CompanyImage, CompanyImageSchema } from './company-images.schema';
         { name: CandidateImage.name, schema: CandidateImageSchema },
         { name: CompanyImage.name, schema: CompanyImageSchema },
     ]),
+    CompanyModule,
+    CandidateModule
   ]
 })
 export class UploadModule {}
