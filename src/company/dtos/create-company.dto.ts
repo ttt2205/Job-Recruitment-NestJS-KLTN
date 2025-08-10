@@ -40,12 +40,21 @@ export class CreateCompanyDto {
     phone: string;
 
     @IsString()
-    @IsNotEmpty({message: "Vui lòng nhập địa chỉ công ty!"})
-    address: string;
+    country?: string;
+
+    @IsString()
+    city?: string;
+
+    @IsString()
+    address?: string;
 
     @IsOptional()
     @IsString()
     logo?: string;
+
+    @IsOptional()
+    @IsString()
+    website?: string;
 
     @IsArray()
     @ValidateNested({ each: true })

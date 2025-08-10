@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, ValidationPipe } from '@nestjs/common';
-import { QueryPaginationDto } from 'src/common/dtos/query-pagination.dto';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dtos/create-company.dto';
 import { UpdateCompanyDto } from './dtos/update-company.dto';
 import { CompanyQueryDto } from './dtos/company-query.dto';
 import { CompanyResponseDto } from './dtos/response/company-response.dto';
 import { JobResponseDto } from 'src/job/dtos/response/job-response.dto';
+import { IndustryResponseDto } from './dtos/response/industry-resonse.dto';
 
 @Controller('api/v1/company')
 export class CompanyController {
@@ -34,6 +34,7 @@ export class CompanyController {
                         .withAddress(company.address)
                         .withJobNumber(company.jobNumber)
                         .withLogo(company.logo)
+                        .withStatus(company.status)
                         .withSocialMedias(company.socialMedias)
                         .withCreatedBy(company.createdBy)
                         .withUpdatedBy(company.updatedBy)
@@ -80,7 +81,7 @@ export class CompanyController {
 
     @Patch(':id')
     @HttpCode(HttpStatus.OK)
-    async UpdatePartitionCompany(@Param('id') id: string, @Body() data: UpdateCompanyDto) {
+    async UpdatePartitionCompany(@Param('id') id: string, @Body(new ValidationPipe()) data: UpdateCompanyDto) {
         const update = await this.companyService.UpdatePartition(id, data);
         return {
             statusCode: HttpStatus.CREATED,
@@ -107,21 +108,25 @@ export class CompanyController {
         const jobCount = await this.companyService.countJobsByCompanyId(id);
         const companyResponse = CompanyResponseDto.builder()
                         .withId(company._id.toString())
-                        .withEmail(company.email)
-                        .withName(company.name)
+                        .withEmail(company.email || "")
+                        .withName(company.name || "")
                         .withUserId(company.userId.toString())
-                        .withPrimaryIndustry(company.primaryIndustry)
+                        .withPrimaryIndustry(company.primaryIndustry || "")
                         .withSize(company.size)
                         .withFoundedIn(company.foundedIn)
-                        .withDescription(company.description)
-                        .withPhone(company.phone)
-                        .withAddress(company.address)
+                        .withDescription(company.description || "")
+                        .withPhone(company.phone || "")
+                        .withCountry(company.country || "")
+                        .withCity(company.city || "")
+                        .withAddress(company.address || "")
                         .withJobNumber(jobCount)
-                        .withLogo(company.logo)
+                        .withLogo(company.logo || "")
+                        .withWebsite(company.website || "")
                         .withSocialMedias(company.socialMedias)
                         .withCreatedBy(company.createdBy)
                         .withUpdatedBy(company.updatedBy)
                         .withDeletedBy(company.deletedBy)
+                        .withStatus(company.status)
                         .build();
         return {
             statusCode: HttpStatus.OK,
@@ -139,21 +144,25 @@ export class CompanyController {
             const jobCount = await this.companyService.countJobsByCompanyId(id);
             companyResponse = CompanyResponseDto.builder()
                             .withId(company._id.toString())
-                            .withEmail(company.email)
-                            .withName(company.name)
+                            .withEmail(company.email || "")
+                            .withName(company.name || "")
                             .withUserId(company.userId.toString())
-                            .withPrimaryIndustry(company.primaryIndustry)
+                            .withPrimaryIndustry(company.primaryIndustry || "")
                             .withSize(company.size)
                             .withFoundedIn(company.foundedIn)
-                            .withDescription(company.description)
-                            .withPhone(company.phone)
-                            .withAddress(company.address)
+                            .withDescription(company.description || "")
+                            .withPhone(company.phone || "")
+                            .withCountry(company.country || "")
+                            .withCity(company.city || "")
+                            .withAddress(company.address || "")
                             .withJobNumber(jobCount)
-                            .withLogo(company.logo)
+                            .withLogo(company.logo || "")
+                            .withWebsite(company.website || "")
                             .withSocialMedias(company.socialMedias)
                             .withCreatedBy(company.createdBy)
                             .withUpdatedBy(company.updatedBy)
                             .withDeletedBy(company.deletedBy)
+                            .withStatus(company.status)
                             .build();
         }
         return {
@@ -207,9 +216,8 @@ export class CompanyController {
                     .withCountry(job?.country || "")
                     .withCity(job?.city || "")
                     .withLocation(job.location)
-                    .withLogo("")
-                    .withSalary(job.salary || 0)
-                    .withTime(job.hours)
+                    .withLogo(companyDto?.logo || "")
+                    .withSalary(job.salary || null)
                     .withExpireDate(job.expirationDate)
                     .withDatePosted(job.createdAt)
                     .withDescription(job.description || "")
@@ -223,6 +231,23 @@ export class CompanyController {
             statusCode: HttpStatus.OK,
             message: "Lấy danh sách công việc liên quan bằng companyId thành công!",
             results: listJobResponseDto || [],
+        }
+    }
+
+    @Get('industry-list')
+    @HttpCode(HttpStatus.OK)
+    async GetIndustryOfCompanies() {
+        const industries = await this.companyService.getIndustryOfCompanies();
+        const industryDtos = industries?.map(item => {
+            return IndustryResponseDto.builder() 
+                .withLabel(item.primaryIndustry)
+                .withValue(item.primaryIndustry)
+                .build();
+        })
+        return {
+            statusCode: HttpStatus.OK,
+            message: "Lấy danh sách danh mục công ty thành công!",
+            results: industryDtos || [],
         }
     }
 }

@@ -31,18 +31,29 @@ export class UploadController {
         };
     }
 
-    @Get('image/company/:id')
+    @Get('logo/company/:id')
+    @HttpCode(HttpStatus.OK)
+    async getLogoOfComanyById(@Param('id') id: string) {
+        const res = await this.uploadService.getLogoOfCompanyById(id);
+        return {
+            statusCode: HttpStatus.OK,
+            message: "Lấy logo công ty thành công!",
+            data: res || ""
+        };
+    }
+
+    @Get('images/company/:id')
     @HttpCode(HttpStatus.OK)
     async getImagesOfComanyById(@Param('id') id: string) {
         const res = await this.uploadService.getImagesOfCompanyById(id);
         return {
             statusCode: HttpStatus.OK,
             message: "Lấy ảnh công ty thành công!",
-            data: res || []
+            results: res || []
         };
     }
 
-    @Post('image/company')
+    @Post('image/company/:companyId')
     @HttpCode(HttpStatus.OK)
     @UseInterceptors(
         FileInterceptor('file', {
@@ -56,17 +67,17 @@ export class UploadController {
         }),
         }),
     )
-    async uploadCompanyImageFile(@UploadedFile() file: Express.Multer.File) {
+    async uploadCompanyImageFile(@Param('companyId') companyId:string, @UploadedFile() file: Express.Multer.File) {
         const filename = file.filename; // ✅ tên file đã chỉnh sửa
-        const res = await this.uploadService.uploadImageCompany(filename);
+        const res = await this.uploadService.uploadImageCompany(companyId, filename);
         return {
             statusCode: HttpStatus.OK,
             message: "Upload ảnh công ty thành công!",
-            data: res || {}
+            data: res || ""
         };
     }
 
-    @Post('logo/company')
+    @Post('logo/company/:companyId')
     @HttpCode(HttpStatus.OK)
     @UseInterceptors(
         FileInterceptor('file', {
@@ -80,13 +91,13 @@ export class UploadController {
         }),
         }),
     )
-    async uploadCompanyLogoFile(@UploadedFile() file: Express.Multer.File) {
+    async uploadCompanyLogoFile(@Param('companyId') companyId:string, @UploadedFile() file: Express.Multer.File) {
         const filename = file.filename; // ✅ tên file đã chỉnh sửa
-        const res = await this.uploadService.uploadLogoCompany(filename);
+        const res = await this.uploadService.uploadLogoCompany(companyId, filename);
         return {
             statusCode: HttpStatus.OK,
             message: "Upload logo công ty thành công!",
-            data: res || {}
+            data: res || ""
         };
     }
 
@@ -110,7 +121,8 @@ export class UploadController {
         @Param('id') id: string,
         @Body('filename') filename: string
     ) {
-        const res = await this.uploadService.deleteImageCompany(id, filename);
+        console.log("filename: ", filename)
+        const res = await this.uploadService.deleteLogoCompany(id, filename);
         return {
             statusCode: HttpStatus.OK,
             message: "Xóa logo công ty thành công!",

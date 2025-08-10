@@ -1,6 +1,8 @@
 import { Type } from "class-transformer";
-import { IsArray, IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, Max, MaxLength } from "class-validator";
+import { IsArray, IsBoolean, IsDate, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Max, MaxLength } from "class-validator";
 import { JobType } from "./job-type.dto";
+import { JobSalary } from "./job-salary.dto";
+import { JobWorkTime } from "../job-work-time.schema";
 
 export class CreateJobDto {
     @IsString({message: 'Tên phải là một chuỗi gồm chữ và số'})
@@ -19,9 +21,9 @@ export class CreateJobDto {
     @Type(() => JobType)
     jobType?: JobType[]; // ex: Fulltime, Intern Ship
 
-    @IsNumber()
-    @IsNotEmpty({message: 'Vui lòng nhập mức lương!'})
-    salary: number;
+    @IsObject()
+    @IsOptional()
+    salary?: JobSalary;
 
     @IsString()
     @IsNotEmpty({message: "Vui lòng nhập trình độ tuyển dụng!"})
@@ -39,9 +41,9 @@ export class CreateJobDto {
     @Type(() => Number)
     experience: number; 
 
-    @IsString()
-    @IsNotEmpty()
-    hours: string; // ex: 8:00am - 9:00pm
+    @IsObject()
+    @IsOptional()
+    workTime?: JobWorkTime;
 
     @IsString()
     industry: string; // ex: Infomation Technology

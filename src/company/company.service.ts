@@ -237,4 +237,28 @@ export class CompanyService {
             );
         }
     }
+
+    async getLogoOfCompany(id: string) {
+        try {
+            const logo = await this.companyModel.findById(id).select('logo').exec();
+            return logo;
+        } catch (error) {
+            console.error('Lỗi lấy logo công ty:', error.message);
+            throw new InternalServerErrorException(
+                'Không thể lấy logo công ty vì lỗi kết nối cơ sở dữ liệu'
+            );
+        }
+    }
+
+    async getIndustryOfCompanies() {
+        try {
+            const industries = await this.companyModel.find().select("primaryIndustry").exec();
+            return industries;
+        } catch (error) {
+            console.error('Lỗi lấy danh mục công ty:', error.message);
+            throw new InternalServerErrorException(
+                'Không thể lấy danh mục công ty vì lỗi kết nối cơ sở dữ liệu'
+            );
+        }
+    }
 }

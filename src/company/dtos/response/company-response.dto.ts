@@ -8,9 +8,13 @@ export class CompanyResponseDto {
   foundedIn?: number;
   description?: string;
   phone: string;
-  address: string;
+  country?: string;
+  city?: string;
+  address?: string;
   logo?: string;
+  website?: string;
   jobNumber?: number; // Optional field for job count
+  status?: boolean;
 
   socialMedias?: {
     platform: string;
@@ -95,6 +99,16 @@ export class CompanyResponseDtoBuilder {
     return this;
   }
 
+  withCountry(country: string): this {
+    this.company.country = country;
+    return this;
+  }
+
+  withCity(city: string): this {
+    this.company.city = city;
+    return this;
+  }
+
   withAddress(address: string): this {
     this.company.address = address;
     return this;
@@ -102,6 +116,16 @@ export class CompanyResponseDtoBuilder {
 
   withLogo(logo?: string): this {
     this.company.logo = logo;
+    return this;
+  }
+
+  withWebsite(website?: string): this {
+    this.company.website = website;
+    return this;
+  }
+
+  withStatus(status?: boolean): this {
+    this.company.status = status;
     return this;
   }
 

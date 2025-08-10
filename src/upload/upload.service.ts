@@ -19,11 +19,24 @@ export class UploadService {
         private readonly companyService: CompanyService
     ) {}
 
+    async getLogoOfCompanyById(id: string) {
+        try {
+            const res = await this.companyService.getLogoOfCompany(id);
+            console.log("logo company: ", res)
+            return res?.logo;
+        } catch (error) {
+            console.log("Lấy logo công ty không thành công do lỗi kết nối cơ sở dữ liệu!")
+            throw new InternalServerErrorException(
+                'Lấy logo công ty không thành công do lỗi kết nối cơ sở dữ liệu!'
+            );
+        }
+    }
+
     async getImagesOfCompanyById(id: string) {
         try {
-            const images = await this.companyImageModel.find({companyId: id}).select('filename').exec();
-            console.log("images company: ", images)
-            return images;
+            const res = await this.companyImageModel.find({companyId: id}).select('filename').exec();
+            console.log("images company: ", res)
+            return res?.map((image) => image.filename);
         } catch (error) {
             console.log("Lấy ảnh công ty không thành công do lỗi kết nối cơ sở dữ liệu!")
             throw new InternalServerErrorException(
@@ -32,14 +45,13 @@ export class UploadService {
         }
     }
 
-    async uploadImageCompany(filename: string) {
+    async uploadImageCompany(companyId: string, filename: string) {
         try {
-            const companyId = "68736afc61942cb6f1e0141c";
             const companyImage = new this.companyImageModel({
                 companyId: companyId,
                 filename: filename,
             });
-            return companyImage.save();
+            return (await companyImage.save()).filename;
         } catch (error) {
             console.log("Lưu ảnh công ty không thành công do lỗi kết nối cơ sở dữ liệu!")
             throw new InternalServerErrorException(
@@ -48,9 +60,8 @@ export class UploadService {
         }
     }
 
-    async uploadLogoCompany(filename: string) {
+    async uploadLogoCompany(companyId:string, filename: string) {
         try {
-            const companyId = "68736afc61942cb6f1e0141c";
             const company = await this.companyService.findById(companyId);
 
             if (company.logo) {
@@ -58,7 +69,7 @@ export class UploadService {
             }
 
             const updateCompany = await this.companyService.UpdatePartition(companyId, {logo: filename});
-            return updateCompany;
+            return updateCompany.logo;
         } catch (error) {
             console.log("Lưu logo công ty không thành công do lỗi kết nối cơ sở dữ liệu!")
             throw new InternalServerErrorException(
@@ -109,9 +120,9 @@ export class UploadService {
             console.log(`✅ Đã xóa file ảnh: ${filename}`);
         } catch (error: any) {
             if (error.code === 'ENOENT') {
-            console.warn(`⚠️ File không tồn tại: ${filename}`);
+                console.warn(`⚠️ File không tồn tại: ${filename}`);
             } else {
-            console.error(`❌ Lỗi khi xóa file: ${filename}`, error);
+                console.error(`❌ Lỗi khi xóa file: ${filename}`, error);
             }
         }
     }

@@ -9,8 +9,17 @@ export class JobResponseDto {
   description: string;
   responsibilities: string[];
   skillAndExperience: string[];
-  time: string;
-  salary: number;
+  salary: {
+    min: number,
+    max: number,
+    currency: string,
+    unit: string,
+    negotiable: boolean
+  } | null;
+  workTime: {
+    from: string,
+    to: string,
+  } | null;
   industry: string;
   quantity: number;
   country: string;
@@ -19,7 +28,7 @@ export class JobResponseDto {
     styleClass: string;
     type: string;
   }[];
-  link: string;
+  website: string | null;
   tag: string;
   destination: {
     min: number;
@@ -53,6 +62,11 @@ export class JobResponseDtoBuilder {
 
     withLogo(logo: string): this {
         this.job.logo = logo;
+        return this;
+    }
+
+    withWebsite(website: string | null): this {
+        this.job.website = website;
         return this;
     }
 
@@ -91,13 +105,19 @@ export class JobResponseDtoBuilder {
         return this;
     }
 
-    withTime(time: string): this {
-        this.job.time = time;
+    withSalary(salary: {
+        min: number,
+        max: number,
+        currency: string,
+        unit: string,
+        negotiable: boolean
+    } | null): this {
+        this.job.salary = salary;
         return this;
     }
 
-    withSalary(salary: number): this {
-        this.job.salary = salary;
+    withWorkTime(workTime: { from: string, to: string } | null): this {
+        this.job.workTime = workTime;
         return this;
     }
 

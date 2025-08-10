@@ -39,14 +39,26 @@ export class Company {
   @Prop({ required: false })
   description: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   phone: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
+  country: string;
+
+  @Prop({ required: false })
+  city: string;
+
+  @Prop({ required: false })
   address: string;
 
   @Prop({ required: false })
   logo: string;
+
+  @Prop({ required: false })
+  website: string;
+
+  @Prop({ default: true })
+  status: boolean;
   
   @Prop({ required: false })
   socialMedias: SocilMedia[];

@@ -8,7 +8,6 @@ import { CompanyService } from 'src/company/company.service';
 import { Company } from 'src/company/company.schema';
 import { JobResponseDto } from './dtos/response/job-response.dto';
 import { CompanyResponseDto } from 'src/company/dtos/response/company-response.dto';
-import { count } from 'console';
 
 @Controller('api/v1/job')
 export class JobController {
@@ -64,8 +63,11 @@ export class JobController {
                     .withCity(job?.city || "")
                     .withLocation(job.location)
                     .withLogo("")
-                    .withSalary(job.salary || 0)
-                    .withTime(job.hours)
+                    .withWorkTime({
+                        from: job?.workTime?.from || "",
+                        to: job?.workTime?.to || ""
+                    })
+                    .withSalary(job.salary || null)
                     .withExpireDate(job.expirationDate)
                     .withDatePosted(job.createdAt)
                     .withDescription(job.description || "")
@@ -130,9 +132,12 @@ export class JobController {
                     .withCountry(job?.country || "")
                     .withCity(job?.city || "")
                     .withLocation(job.location)
-                    .withLogo("")
-                    .withSalary(job.salary || 0)
-                    .withTime(job.hours)
+                    .withLogo(companyDto?.logo || "")
+                    .withWorkTime({
+                        from: job?.workTime?.from || "",
+                        to: job?.workTime?.to || ""
+                    })
+                    .withSalary(job.salary || null)
                     .withExpireDate(job.expirationDate)
                     .withDatePosted(job.createdAt)
                     .withDescription(job.description || "")
@@ -191,9 +196,12 @@ export class JobController {
                 .withCountry(job?.country || "")
                 .withCity(job?.city || "")
                 .withLocation(job.location)
-                .withLogo("")
-                .withSalary(job.salary || 0)
-                .withTime(job.hours)
+                .withLogo(companyDto?.logo || "")
+                    .withWorkTime({
+                        from: job?.workTime?.from || "",
+                        to: job?.workTime?.to || ""
+                    })
+                .withSalary(job.salary || null)
                 .withExpireDate(job.expirationDate)
                 .withDatePosted(job.createdAt)
                 .withDescription(job.description || "")
@@ -246,11 +254,33 @@ export class JobController {
     @Get('category-list')
     @HttpCode(200)
     async GetCategoryList() {
-        const data = await this.jobService.GetListCategory();
+        const data = await this.jobService.GetListByKey('industry');
         return {
             statusCode: HttpStatus.OK,
             message: "Lấy danh sách danh mục thành công!",
-            data: data || [],
+            results: data || [],
+        }
+    }
+
+    @Get('skill-list')
+    @HttpCode(200)
+    async GetSkillList() {
+        const data = await this.jobService.GetListByKey('skills');
+        return {
+            statusCode: HttpStatus.OK,
+            message: "Lấy danh sách kỹ năng thành công!",
+            results: data || [],
+        }
+    }
+
+    @Get('city-list')
+    @HttpCode(200)
+    async GetCityList() {
+        const data = await this.jobService.GetListByKey('city');
+        return {
+            statusCode: HttpStatus.OK,
+            message: "Lấy danh sách thành phố thành công!",
+            results: data || [],
         }
     }
 
@@ -314,9 +344,12 @@ export class JobController {
                     .withCountry(job?.country || "")
                     .withCity(job?.city || "")
                     .withLocation(job.location)
-                    .withLogo("")
-                    .withSalary(job.salary || 0)
-                    .withTime(job.hours)
+                    .withLogo(companyDto?.logo || "")
+                    .withWorkTime({
+                        from: job?.workTime?.from || "",
+                        to: job?.workTime?.to || ""
+                    })
+                    .withSalary(job.salary || null)
                     .withExpireDate(job.expirationDate)
                     .withDatePosted(job.createdAt)
                     .withDescription(job.description || "")

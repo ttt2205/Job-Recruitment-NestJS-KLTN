@@ -4,6 +4,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import { JobType } from './dtos/job-type.dto';
 import { JobTypeSchema } from './job-type.schema';
+import { SalaryTemplate } from './job-salary.shema';
+import { JobWorkTime } from './job-work-time.schema';
 
 // Type cho các trường người tạo, cập nhật, xóa
 class UserRef {
@@ -34,8 +36,8 @@ export class Job {
   @Prop({ type: [JobTypeSchema], required: false })
   jobType?: JobType[]
   
-  @Prop({ required: true })
-  salary: number;
+  @Prop({ type: SalaryTemplate, required: false })
+  salary?: SalaryTemplate;
 
   @Prop({ required: true })
   level: string;
@@ -49,8 +51,8 @@ export class Job {
   @Prop({ required: true })
   experience: number;
 
-  @Prop({ required: true })
-  hours: string;
+  @Prop({ type: JobWorkTime, required: false })
+  workTime?: JobWorkTime;
 
   @Prop({ required: true })
   industry: string;

@@ -5,10 +5,7 @@ import { Model, Types } from 'mongoose';
 import { CreateJobDto } from './dtos/create-job.dto';
 import { GlobalException } from 'src/CustomExceptions/global.exception';
 import { UpdateJobDto } from './dtos/update-job.dto';
-import { QueryPaginationDto } from 'src/common/dtos/query-pagination.dto';
 import { JobQueryDto } from './dtos/job-query.dto';
-import { types } from 'util';
-import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class JobService {
@@ -244,29 +241,21 @@ export class JobService {
         }
     }
 
-    async GetListCategory() {
-        try {
-            const listCategory = await this.jobModel.find().distinct('industry').exec();
-            console.log("listCategory: ", listCategory)
-            return listCategory || [];
-        } catch (error) {
-            console.error('Lỗi lấy danh sách danh mục công việc:', error.message);
-            throw new InternalServerErrorException(
-                'Không thể lấy danh sách danh mục công việc vì lỗi kết nối cơ sở dữ liệu'
-            );
-        }
-    }
-
     async GetMaxSalary() {
         try {
-            const job = await this.jobModel.findOne().sort({ salary: -1 }).exec();
-            const maxSalary = job?.salary || 0;
-            console.log("maxSalary: ", maxSalary)
+            const job = await this.jobModel
+            .findOne({ 'salary.max': { $ne: null } }) // loại bỏ job không có max
+            .sort({ 'salary.max': -1 })               // sắp xếp giảm dần theo salary.max
+            .exec();
+
+            const maxSalary = job?.salary?.max || 0;
+
+            console.log("maxSalary:", maxSalary);
             return maxSalary;
         } catch (error) {
             console.error('Lỗi lấy mức lương cao nhất:', error.message);
             throw new InternalServerErrorException(
-                'Không thể lấy mức lương cao nhất vì lỗi kết nối cơ sở dữ liệu'
+            'Không thể lấy mức lương cao nhất vì lỗi kết nối cơ sở dữ liệu'
             );
         }
     }
@@ -319,6 +308,19 @@ export class JobService {
             console.error(`Lỗi lấy công việc liên quan bằng companyId=${companyId}:`, error.message);
             throw new InternalServerErrorException(
                 `Không thể lấy công việc liên quan bằng companyId${companyId} vì lỗi kết nối cơ sở dữ liệu`
+            );
+        }
+    }
+
+    async GetListByKey(key: string) {
+        try {
+            const listSkill = await this.jobModel.find().distinct(key).exec();
+            console.log("listSkill: ", listSkill)
+            return listSkill || [];
+        } catch (error) {
+            console.error(`Lỗi lấy danh sách  công v${key} iệc:`, error.message);
+            throw new InternalServerErrorException(
+                `Không thể lấy danh sách ${key} công việc vì lỗi kết nối cơ sở dữ liệu`
             );
         }
     }

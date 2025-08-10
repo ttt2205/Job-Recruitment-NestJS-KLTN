@@ -57,6 +57,7 @@ export class AuthService {
         userId: string;
         email: string;
         type: 'candidate' | 'company' | 'admin';
+        data: Company | Candidate | null
     }> {
         try {
             // payload sẽ có cấu trúc giống như khi bạn sign: { sub, email, type }
@@ -70,21 +71,21 @@ export class AuthService {
             const email = payload.email;
             const type = payload.type;
 
-            // let data: Company | Candidate | null = null;
+            let data: Company | Candidate | null = null;
 
-            // if (type === 'candidate') {
-            //     data = await this.candidateService.getCandidateByUseIdNullable(id);
-            // } else if (type === 'company') {
-            //     data = await this.companyService.getCompanyByUseIdNullable(id);
-            // } else {
-            //     throw new Error(`Unsupported user type: ${type}`);
-            // }
+            if (type === 'candidate') {
+                data = await this.candidateService.getCandidateByUseIdNullable(id);
+            } else if (type === 'company') {
+                data = await this.companyService.getCompanyByUseIdNullable(id);
+            } else {
+                throw new Error(`Unsupported user type: ${type}`);
+            }
 
             return {
                 userId: id,
                 email,
                 type,
-                // data,
+                data,
             };
 
             
@@ -99,7 +100,6 @@ export class AuthService {
 
             console.log("getAccount error: ", error)
             throw error;
-            // throw new Error('Invalid or expired token');
         }
     }
 }

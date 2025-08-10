@@ -31,61 +31,60 @@ export class AuthController {
         console.log("token: ", token)
         // Logic for user login
         const res = await this.authService.getAccount(token);
-        // let responseDto = {};
-        // // Map data to dto and response for client
-        // if (res.type === 'candidate' && res.data) {
-        //     const candidate = res.data as Candidate;
-        //     responseDto = CandidateResponseDto.builder()
-        //         .withId(candidate._id.toString())
-        //         .withUserId(candidate.userId.toString())
-        //         .withEmail(res.email)
-        //         .withAvatar(candidate.avatar || '')
-        //         .withName(candidate.name)
-        //         .withAge(candidate.age || null)
-        //         .withDesignation(candidate.designation || '')
-        //         .withLocation(candidate.location || '')
-        //         .withHourlyRate(candidate.hourlyRate || 0)
-        //         .withTags(candidate.skills || [])
-        //         .withCategory(candidate.industry || '')
-        //         .withExperience(candidate.experience || 0)
-        //         .withQualification(candidate.educationLevel || '')
-        //         .withGender(candidate.gender || '')
-        //         .withCreatedAt(candidate.createdAt)
-        //         .withDescription(candidate.description || '')
-        //         .withCurrentSalary(candidate.currentSalary || '')
-        //         .withExpectSalary(candidate.expectSalary || '')
-        //         .withLanguage(candidate.language || [])
-        //         .withSocialMedias(candidate.socialMedias || [])
-        //         .build();
-        // }
+        let responseDto = {};
+        // Map data to dto and response for client
+        if (res.type === 'candidate' && res.data) {
+            const candidate = res.data as Candidate;
+            responseDto = CandidateResponseDto.builder()
+                .withId(candidate._id.toString())
+                .withUserId(candidate.userId.toString())
+                .withEmail(res.email)
+                .withAvatar(candidate.avatar || '')
+                .withName(candidate.name)
+                .withAge(candidate.age || null)
+                .withDesignation(candidate.designation || '')
+                .withLocation(candidate.location || '')
+                .withHourlyRate(candidate.hourlyRate || 0)
+                .withTags(candidate.skills || [])
+                .withCategory(candidate.industry || '')
+                .withExperience(candidate.experience || 0)
+                .withQualification(candidate.educationLevel || '')
+                .withGender(candidate.gender || '')
+                .withCreatedAt(candidate.createdAt)
+                .withDescription(candidate.description || '')
+                .withCurrentSalary(candidate.currentSalary || '')
+                .withExpectSalary(candidate.expectSalary || '')
+                .withLanguage(candidate.language || [])
+                .withSocialMedias(candidate.socialMedias || [])
+                .build();
+        }
 
-        // if (res.type === 'company' && res.data) {
-        //     const company = res.data as Company;
-        //     responseDto = CompanyResponseDto.builder()
-        //         .withId(company._id.toString())
-        //         .withEmail(company.email)
-        //         .withName(company.name)
-        //         .withUserId(company.userId.toString())
-        //         .withPrimaryIndustry(company.primaryIndustry)
-        //         .withSize(company.size)
-        //         .withFoundedIn(company.foundedIn)
-        //         .withDescription(company.description)
-        //         .withPhone(company.phone)
-        //         .withAddress(company.address)
-        //         .withLogo(company.logo)
-        //         .withSocialMedias(company.socialMedias)
-        //         .withCreatedBy(company.createdBy)
-        //         .withUpdatedBy(company.updatedBy)
-        //         .withDeletedBy(company.deletedBy)
-        //         .build();
-        // }
+        if (res.type === 'company' && res.data) {
+            const company = res.data as Company;
+            responseDto = CompanyResponseDto.builder()
+                .withId(company._id.toString())
+                .withEmail(company.email)
+                .withName(company.name)
+                .withUserId(company.userId.toString())
+                .withPrimaryIndustry(company.primaryIndustry)
+                .withSize(company.size)
+                .withFoundedIn(company.foundedIn)
+                .withDescription(company.description)
+                .withPhone(company.phone)
+                .withAddress(company.address)
+                .withLogo(company.logo)
+                .withSocialMedias(company.socialMedias)
+                .withCreatedBy(company.createdBy)
+                .withUpdatedBy(company.updatedBy)
+                .withDeletedBy(company.deletedBy)
+                .build();
+        }
         return {
             statusCode: HttpStatus.OK,
             message: 'Get account successful!',
-            // data: responseDto
-            //     ? { userId: res.userId, emailLogin: res.email, type: res.type, ...responseDto }
-            //     : { userId: res.userId, emailLogin: res.email, type: res.type },
-            data: res,
+            data: responseDto
+                ? { userId: res.userId, emailLogin: res.email, type: res.type, ...responseDto }
+                : { userId: res.userId, emailLogin: res.email, type: res.type },
         };
     }
 
