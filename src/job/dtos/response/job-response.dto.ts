@@ -42,6 +42,8 @@ export class JobResponseDto {
     min: number;
     max: number;
   };
+  applications: number|null;
+  status: boolean;
 
   static builder(): JobResponseDtoBuilder {
     return new JobResponseDtoBuilder();
@@ -131,28 +133,38 @@ export class JobResponseDtoBuilder {
         return this;
     }
 
-    withDatePosted(datePosted: Date) {
+    withDatePosted(datePosted: Date): this {
         this.job.datePosted = datePosted.toLocaleDateString("vi-VN");
         return this;
     }
 
-    withExpireDate(expireDate: Date) {
+    withExpireDate(expireDate: Date): this {
         this.job.expireDate = expireDate.toLocaleDateString("vi-VN");
         return this;
     }
 
-    withDescription(description: string) {
+    withDescription(description: string): this {
         this.job.description = description;
         return this;
     }
 
-    withResponsibilities(responsibilities: string[]) {
+    withResponsibilities(responsibilities: string[]): this {
         this.job.responsibilities = responsibilities;
         return this;
     }
 
-    withSkillAndExperience(skillAndExperience: string[]) {
+    withSkillAndExperience(skillAndExperience: string[]): this {
         this.job.skillAndExperience = skillAndExperience;
+        return this;
+    }
+
+    withApplications(applications: number | null): this {
+        this.job.applications = applications;
+        return this;
+    }
+
+    withStatus(status: boolean ): this {
+        this.job.status = status;
         return this;
     }
 

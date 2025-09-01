@@ -9,7 +9,9 @@ import { JobQueryDto } from './dtos/job-query.dto';
 
 @Injectable()
 export class JobService {
-    constructor(@InjectModel(Job.name) private jobModel: Model<Job>) {}
+    constructor(
+        @InjectModel(Job.name) private jobModel: Model<Job>,
+    ) {}
 
     async CreateService(data: CreateJobDto) {
         try {
@@ -314,13 +316,40 @@ export class JobService {
 
     async GetListByKey(key: string) {
         try {
-            const listSkill = await this.jobModel.find().distinct(key).exec();
-            console.log("listSkill: ", listSkill)
-            return listSkill || [];
+            const listValue = await this.jobModel.find().distinct(key).exec();
+            return listValue || [];
         } catch (error) {
-            console.error(`Lỗi lấy danh sách  công v${key} iệc:`, error.message);
+            console.error(`Lỗi lấy danh sách ${key}:`, error.message);
             throw new InternalServerErrorException(
-                `Không thể lấy danh sách ${key} công việc vì lỗi kết nối cơ sở dữ liệu`
+                `Không thể lấy danh sách ${key} vì lỗi kết nối cơ sở dữ liệu`
+            );
+        }
+    }
+
+    async GetCategoryListByKeyAndCompanyId(key: string, companyId: string | number) {
+        try {
+            const listValue = await this.jobModel.find({
+                companyId: companyId
+            }).distinct(key).exec();
+            return listValue || [];
+        } catch (error) {
+            console.error(`Lỗi lấy danh sách ${key} của công ty ${companyId}:`, error.message);
+            throw new InternalServerErrorException(
+                `Không thể lấy danh sách ${key} của công ty ${companyId} vì lỗi kết nối cơ sở dữ liệu`
+            );
+        }
+    }
+
+    async GetListJobByCompanyId(id: string) {
+        try {
+            const listValue = await this.jobModel.find({
+                companyId: id
+            }).exec();
+            return listValue || [];
+        } catch (error) {
+            console.error(`Lỗi lấy danh sách  công việc theo companyId:`, error.message);
+            throw new InternalServerErrorException(
+                `Không thể lấy danh sách công việc theo companyId vì lỗi kết nối cơ sở dữ liệu`
             );
         }
     }

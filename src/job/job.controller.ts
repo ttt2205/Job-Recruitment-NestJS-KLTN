@@ -1,19 +1,19 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, ValidationPipe } from '@nestjs/common';
 import { JobService } from './job.service';
-import { QueryPaginationDto } from 'src/common/dtos/query-pagination.dto';
 import { CreateJobDto } from './dtos/create-job.dto';
 import { UpdateJobDto } from './dtos/update-job.dto';
 import { JobQueryDto } from './dtos/job-query.dto';
 import { CompanyService } from 'src/company/company.service';
-import { Company } from 'src/company/company.schema';
 import { JobResponseDto } from './dtos/response/job-response.dto';
 import { CompanyResponseDto } from 'src/company/dtos/response/company-response.dto';
+import { FilterService } from './services/filter.service';
 
 @Controller('api/v1/job')
 export class JobController {
     constructor(
         private readonly jobService: JobService,
-        private readonly companyService: CompanyService
+        private readonly companyService: CompanyService,
+        private readonly filterService: FilterService
     ) {}
 
     @Get()
@@ -62,7 +62,7 @@ export class JobController {
                     .withCountry(job?.country || "")
                     .withCity(job?.city || "")
                     .withLocation(job.location)
-                    .withLogo("")
+                    .withLogo(companyDto?.logo || "")
                     .withWorkTime({
                         from: job?.workTime?.from || "",
                         to: job?.workTime?.to || ""
@@ -152,6 +152,32 @@ export class JobController {
             results: listJobResponseDto || [],
         }
     }
+
+    // @Get('get-list/company/:id')
+    // @HttpCode(200)
+    // async GetListJobByCompanyId(@Param('id') id: string) {
+    //     const listJob = await this.jobService.GetListJobByCompanyId(id);
+    //     const company = await this.companyService.findById(id);
+    //     const listJobResponseDto =  listJob.map(item => {
+    //         return JobResponseDto.builder()
+    //                     .withId(item.id)
+    //                     .withJobTitle(item.name)
+    //                     .withCountry(item?.country || "")
+    //                     .withCity(item?.city || "")
+    //                     .withLocation(item.location)
+    //                     .withLogo(company?.logo || "")
+    //                     .withApplications(0)
+    //                     .withStatus(item?.status || false)
+    //                     .withDatePosted(item.createdAt)
+    //                     .withExpireDate(item.expirationDate)
+    //                     .build();
+    //     });
+    //     return {
+    //         statusCode: HttpStatus.OK,
+    //         message: "Lấy danh sách công việc theo công ty thành công!",
+    //         results: listJobResponseDto || [],
+    //     }
+    // }
 
     @Get('detail/:id')
     @HttpCode(200)
@@ -262,6 +288,18 @@ export class JobController {
         }
     }
 
+    // Category == Industry
+    @Get('category-list/company/:id')
+    @HttpCode(200)
+    async GetCategoryListByCompanyId(@Param('id') id: string) {
+        const data = await this.jobService.GetCategoryListByKeyAndCompanyId('industry', id);
+        return {
+            statusCode: HttpStatus.OK,
+            message: "Lấy danh sách danh mục thành công!",
+            results: data || [],
+        }
+    }
+
     @Get('skill-list')
     @HttpCode(200)
     async GetSkillList() {
@@ -361,6 +399,71 @@ export class JobController {
         return {
             statusCode: HttpStatus.OK,
             message: "Lấy danh sách công việc liên quan thành công!",
+            results: listJobResponseDto || [],
+        }
+    }
+
+    @Get('get-list/dashboard/company/:id')
+    @HttpCode(200)
+    async GetListJobsByCompanyId(@Param('id') id: string | number, @Query('category') category?: string, @Query('time') time?: number) {
+        const listJob = await this.filterService.filterJobsByCompanyIdForDashboard(id, category, time);
+        const listJobResponseDto = await Promise.all(
+            listJob.map(async (job) => {
+                let companyDto: Partial<CompanyResponseDto> | null = null;
+                if (job.companyId) {
+                    let company = await this.companyService.findById(id);
+                    companyDto = CompanyResponseDto.builder()
+                        .withId(company._id.toString())
+                        .withEmail(company.email)
+                        .withName(company.name)
+                        .withUserId(company.userId.toString())
+                        .withPrimaryIndustry(company.primaryIndustry)
+                        .withSize(company.size)
+                        .withFoundedIn(company.foundedIn)
+                        .withDescription(company.description)
+                        .withPhone(company.phone)
+                        .withAddress(company.address)
+                        .withLogo(company.logo)
+                        .withSocialMedias(company.socialMedias)
+                        .withCreatedBy(company.createdBy)
+                        .withUpdatedBy(company.updatedBy)
+                        .withDeletedBy(company.deletedBy)
+                        .withIsDeleted(company.isDeleted)
+                        .withCreatedAt(company.createdAt)
+                        .withUpdatedAt(company.updatedAt)
+                        .build();
+                }
+        
+                return JobResponseDto.builder()
+                    .withId(job._id.toString())
+                    .withCompany(companyDto)
+                    .withDestination(null)
+                    .withJobTitle(job.name)
+                    .withJobType(job?.jobType || [])
+                    .withQuantity(job?.quantity || 0)
+                    .withIndustry(job?.industry || "")
+                    .withCountry(job?.country || "")
+                    .withCity(job?.city || "")
+                    .withLocation(job.location)
+                    .withLogo(companyDto?.logo || "")
+                    .withWorkTime({
+                        from: job?.workTime?.from || "",
+                        to: job?.workTime?.to || ""
+                    })
+                    .withApplications(0)
+                    .withStatus(job?.status || false)
+                    .withSalary(job.salary || null)
+                    .withExpireDate(job.expirationDate)
+                    .withDatePosted(job.createdAt)
+                    .withDescription(job.description || "")
+                    .withResponsibilities(job.responsibilities || ["Không có mô tả về trách nhiệm!"])
+                    .withSkillAndExperience(job.skillAndExperience || ["Không có mô tả về kỹ năng và kinh nghiệm!"])
+                    .build();
+            })
+          );
+        return {
+            statusCode: HttpStatus.OK,
+            message: "Lấy danh sách công việc thành công!",
             results: listJobResponseDto || [],
         }
     }

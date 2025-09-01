@@ -1,0 +1,31 @@
+@baseUrl = http://localhost:3000
+@token = ""
+
+# GET list job by company id request
+GET  {{baseUrl}}/api/v1/job/get-list/dashboard/company/68736afc61942cb6f1e0141c
+Content-Type: application/json
+
+# GET list industry of job by key and company id request
+GET  {{baseUrl}}/api/v1/job/category-list/company/68736afc61942cb6f1e0141c
+Content-Type: application/json
+
+###
+
+# PATCH request
+PATCH  {{baseUrl}}/api/v1/job/689307de1152ccfb7a7d3468
+Content-Type: application/json
+
+{
+    "status": true
+}
+
+###
+
+# POST request
+POST http://localhost:3000/api/v1/users
+Content-Type: application/json
+
+{
+  "name": "Trung",
+  "email": "trung@example.com"
+}

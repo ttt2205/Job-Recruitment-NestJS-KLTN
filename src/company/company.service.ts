@@ -136,7 +136,7 @@ export class CompanyService {
         }
     }
 
-    async findById(id: string) {
+    async findById(id: string | number) {
         let company: Company | null;
         try {
             company = await this.companyModel.findOne({ _id: id }).exec();

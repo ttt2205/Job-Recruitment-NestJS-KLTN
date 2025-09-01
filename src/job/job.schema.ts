@@ -72,6 +72,9 @@ export class Job {
   @Prop({ type: Date ,required: true })
   expirationDate: Date;
 
+  @Prop({  required: false })
+  status?: boolean;
+
   @Prop({ type: UserRef, required: false })
   createdBy?: UserRef;
 

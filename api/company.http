@@ -1,0 +1,6 @@
+@baseUrl = http://localhost:3000
+@token = ""
+
+# GET list company pagination
+GET  {{baseUrl}}/api/v1/company?page=1&size=10&sort=&search=&location=&primaryIndustry=&foundationDateMin=1900&foundationDateMax=2025
+Content-Type: application/json
