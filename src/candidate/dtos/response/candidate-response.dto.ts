@@ -4,15 +4,20 @@ export class CandidateResponseDto {
   email: string;
   avatar: string;
   name: string;
+  industry: string;
   designation: string;
+  country: string;
+  city: string;
   location: string;
   hourlyRate: number;
-  tags: string[];
+  tags: string[]; // === skills
   category: string;
   gender: string;
   createdAt: string;
   experience: number;
-  qualification: string;
+  qualification: string; // == educationLevel
+  birthday: Date | null;
+  phone?: string;
   age: number;
   currentSalary?: string;
   expectSalary?: string;
@@ -22,6 +27,7 @@ export class CandidateResponseDto {
     platform: string;
     url: string;
   }[];
+  status?: boolean;
 
   static builder(): CandidateResponseDtoBuilder {
     return new CandidateResponseDtoBuilder();
@@ -37,6 +43,16 @@ export class CandidateResponseDtoBuilder {
 
   withId(id: string): this {
     this.candidate.id = id;
+    return this;
+  }
+
+  withIndustry(industry: string): this {
+    this.candidate.industry = industry;
+    return this;
+  }
+
+  withPhone(phone: string): this {
+    this.candidate.phone = phone;
     return this;
   }
 
@@ -57,6 +73,11 @@ export class CandidateResponseDtoBuilder {
 
   withName(name: string): this {
     this.candidate.name = name;
+    return this;
+  }
+  
+  withBirthday(birthday: Date | null): this {
+    this.candidate.birthday = birthday;
     return this;
   }
 
@@ -136,6 +157,21 @@ export class CandidateResponseDtoBuilder {
 
   withSocialMedias(socialMedias?: { platform: string; url: string }[]): this {
     this.candidate.socialMedias = socialMedias;
+    return this;
+  }
+
+  withCountry(country: string): this {
+    this.candidate.country = country;
+    return this;
+  }
+
+  withCity(city: string): this {
+    this.candidate.city = city;
+    return this;
+  }
+
+  withStatus(status: boolean): this {
+    this.candidate.status = status;
     return this;
   }
 

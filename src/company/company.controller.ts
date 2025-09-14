@@ -138,7 +138,7 @@ export class CompanyController {
     @Get('details/user/:id')
     @HttpCode(HttpStatus.OK)
     async GetCompanyByUserId(@Param('id') id: string) {
-        const company = await this.companyService.getCompanyByUseIdNullable(id);
+        const company = await this.companyService.getCompanyByUserIdNullable(id);
         let companyResponse: Partial<CompanyResponseDto> | null = null;
         if (company) {
             const jobCount = await this.companyService.countJobsByCompanyId(id);
@@ -240,8 +240,8 @@ export class CompanyController {
         const industries = await this.companyService.getIndustryOfCompanies();
         const industryDtos = industries?.map(item => {
             return IndustryResponseDto.builder() 
-                .withLabel(item.primaryIndustry)
-                .withValue(item.primaryIndustry)
+                .withLabel(item)
+                .withValue(item)
                 .build();
         })
         return {

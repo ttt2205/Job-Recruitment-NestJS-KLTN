@@ -198,12 +198,48 @@ export class CandidateService {
         }
     }
 
-    async getCandidateByUseIdNullable(id: string): Promise<Candidate | null> {
+    async getCandidateByUserIdNullable(id: string): Promise<Candidate | null> {
         try {
             return await this.candidateModel.findOne({ userId: id }).exec();
         } catch (error) {
             console.error('Lỗi DB khi lấy ứng viên:', error.message);
             return null;
+        }
+    }
+    
+    async getAvatarOfCandidate(id: string) {
+        try {
+            const logo = await this.candidateModel.findById(id).select('avatar').exec();
+            return logo;
+        } catch (error) {
+            console.error('Lỗi lấy avatar ứng viên:', error.message);
+            throw new InternalServerErrorException(
+                'Không thể lấy avatar ứng viên vì lỗi kết nối cơ sở dữ liệu'
+            );
+        }
+    }
+
+    async getIndustryOfCandidates() {
+        try {
+            const industries = await this.candidateModel.distinct("industry").exec();
+            return industries;
+        } catch (error) {
+            console.error('Lỗi lấy danh mục nghề nghiệp của các ứng viên:', error.message);
+            throw new InternalServerErrorException(
+                'Không thể lấy danh mục nghề nghiệp của các ứng viên vì lỗi kết nối cơ sở dữ liệu'
+            );
+        }
+    }
+
+    async GetListByKey(key: string) {
+        try {
+            const listValue = await this.candidateModel.find().distinct(key).exec();
+            return listValue || [];
+        } catch (error) {
+            console.error(`Lỗi lấy danh sách ${key}:`, error.message);
+            throw new InternalServerErrorException(
+                `Không thể lấy danh sách ${key} vì lỗi kết nối cơ sở dữ liệu`
+            );
         }
     }
 }

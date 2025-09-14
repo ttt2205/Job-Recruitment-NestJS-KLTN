@@ -24,9 +24,6 @@ export class Candidate {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ type: Date, required: false })
-  age?: Date;
-
   @Prop({ required: false })
   industry?: string; // == category
 
@@ -34,10 +31,22 @@ export class Candidate {
   skills?: string[];
 
   @Prop({ required: false })
+  birthday?: Date;
+
+  @Prop({ required: false })
   avatar?: string;
 
   @Prop({ required: false })
+  phone?: string;
+
+  @Prop({ required: false })
   designation?: string;
+
+  @Prop({ required: false })
+  country?: string;
+
+  @Prop({ required: false })
+  city?: string;
 
   @Prop({ required: false })
   location?: string;
@@ -80,6 +89,9 @@ export class Candidate {
 
   @Prop({ default: false })
   isDeleted: boolean;
+
+  @Prop({ default: false })
+  status: boolean;
 
   createdAt: Date;
 

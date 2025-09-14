@@ -41,7 +41,6 @@ export class AuthController {
                 .withEmail(res.email)
                 .withAvatar(candidate.avatar || '')
                 .withName(candidate.name)
-                .withAge(candidate.age || null)
                 .withDesignation(candidate.designation || '')
                 .withLocation(candidate.location || '')
                 .withHourlyRate(candidate.hourlyRate || 0)

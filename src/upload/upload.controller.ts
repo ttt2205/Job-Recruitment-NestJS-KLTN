@@ -8,29 +8,7 @@ import { UploadService } from './upload.service';
 export class UploadController {
     constructor(private readonly uploadService: UploadService) {}
 
-    @Post('image/candidate')
-    @UseInterceptors(
-        FileInterceptor('file', {
-        storage: diskStorage({
-            destination: './images/candidates', // vị trí thư mục lưu ảnh được lưu trên ổ đĩa
-            filename: (req, file, cb) => {
-            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-            const ext = extname(file.originalname);
-            cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-            },
-        }),
-        }),
-    )
-    async uploadCandidateImageFile(@UploadedFile() file: Express.Multer.File) {
-        const filename = file.filename; // ✅ tên file đã chỉnh sửa
-        const originalname = file.originalname;
-
-        return {
-            url: `/images/companies/${filename}`,
-            originalname,
-        };
-    }
-
+    // <-- Upload company logo and images !-->
     @Get('logo/company/:id')
     @HttpCode(HttpStatus.OK)
     async getLogoOfComanyById(@Param('id') id: string) {
@@ -126,6 +104,106 @@ export class UploadController {
         return {
             statusCode: HttpStatus.OK,
             message: "Xóa logo công ty thành công!",
+            data: res || {}
+        };
+    }
+
+    // <-- Upload candidate avatar and images !-->
+    @Get('avatar/candidate/:id')
+    @HttpCode(HttpStatus.OK)
+    async getAvatarOfCandidateById(@Param('id') id: string) {
+        const res = await this.uploadService.getAvatarOfCandidateById(id);
+        return {
+            statusCode: HttpStatus.OK,
+            message: "Lấy avatar ứng viên thành công!",
+            data: res || ""
+        };
+    }
+
+    @Get('images/candidate/:id')
+    @HttpCode(HttpStatus.OK)
+    async getImagesOfCandidateById(@Param('id') id: string) {
+        const res = await this.uploadService.getImagesOfCandidateById(id);
+        return {
+            statusCode: HttpStatus.OK,
+            message: "Lấy avatar ứng viên thành công!",
+            results: res || []
+        };
+    }
+
+    @Post('image/candidate/:id')
+    @HttpCode(HttpStatus.OK)
+    @UseInterceptors(
+        FileInterceptor('file', {
+        storage: diskStorage({
+            destination: './images/candidates', // vị trí thư mục lưu ảnh được lưu trên ổ đĩa
+            filename: (req, file, cb) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                const ext = extname(file.originalname);
+                cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+            },
+        }),
+        }),
+    )
+    async uploadCandidateImageFile(@Param('id') id:string, @UploadedFile() file: Express.Multer.File) {
+        const filename = file.filename; // ✅ tên file đã chỉnh sửa
+        const res = await this.uploadService.uploadImageCandidate(id, filename);
+        return {
+            statusCode: HttpStatus.OK,
+            message: "Upload ảnh ứng viên thành công!",
+            data: res || ""
+        };
+    }
+
+    @Post('avatar/candidate/:id')
+    @HttpCode(HttpStatus.OK)
+    @UseInterceptors(
+        FileInterceptor('file', {
+        storage: diskStorage({
+            destination: './images/candidates', // vị trí thư mục lưu ảnh được lưu trên ổ đĩa
+            filename: (req, file, cb) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                const ext = extname(file.originalname);
+                cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+            },
+        }),
+        }),
+    )
+    async uploadCandidateAvatarFile(@Param('id') id:string, @UploadedFile() file: Express.Multer.File) {
+        const filename = file.filename; // ✅ tên file đã chỉnh sửa
+        const res = await this.uploadService.uploadAvatarCandidate(id, filename);
+        return {
+            statusCode: HttpStatus.OK,
+            message: "Upload avatar ứng viên thành công!",
+            data: res || ""
+        };
+    }
+
+    @Delete('image/candidate/:id')
+    @HttpCode(HttpStatus.OK)
+    async deleteImageCandidate(
+        @Param('id') id: string,
+        @Body('filename') filename: string
+    ) {
+        const res = await this.uploadService.deleteImageCandidate(id, filename);
+        return {
+            statusCode: HttpStatus.OK,
+            message: "Xóa ảnh ứng viên thành công!",
+            data: res || {}
+        };
+    }
+
+    @Delete('avatar/candidate/:id')
+    @HttpCode(HttpStatus.OK)
+    async deleteAvatarCandidate(
+        @Param('id') id: string,
+        @Body('filename') filename: string
+    ) {
+        console.log("filename: ", filename)
+        const res = await this.uploadService.deleteAvatarCandidate(id, filename);
+        return {
+            statusCode: HttpStatus.OK,
+            message: "Xóa avatar ứng viên thành công!",
             data: res || {}
         };
     }

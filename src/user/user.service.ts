@@ -80,4 +80,18 @@ export class UserService {
             );
         }
     }
+
+    async findById(id: string) {
+        try {
+            const user = await this.userModel.findOne({ _id: id, isDeleted: false }).exec();
+            if (!user) {
+                throw new NotFoundException(`Không tìm thấy tài khoản với id: ${id}`);
+            }
+            return user;
+        } catch (error) {
+            throw new InternalServerErrorException(
+                'Không thể tìm thấy tài khoản vì lỗi kết nối cơ sở dữ liệu'
+            );
+        }
+    }
 }

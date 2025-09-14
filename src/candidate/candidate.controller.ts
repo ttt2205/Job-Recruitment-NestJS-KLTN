@@ -4,10 +4,15 @@ import { CandidateService } from './candidate.service';
 import { UpdateCandidateDto } from './dtos/update-candidate-dto';
 import { CandidateQueryDto } from './dtos/candidate-query.dto';
 import { CandidateResponseDto } from './dtos/response/candidate-response.dto';
+import { IndustryResponseDto } from 'src/company/dtos/response/industry-resonse.dto';
+import { UserService } from 'src/user/user.service';
 
 @Controller('api/v1/candidate')
 export class CandidateController {
-    constructor(private readonly candidateService: CandidateService) {}
+    constructor(
+        private readonly candidateService: CandidateService,
+        private readonly userService: UserService
+    ) {}
 
     @Get()
     @HttpCode(HttpStatus.OK)
@@ -29,6 +34,9 @@ export class CandidateController {
                 .withCategory(candidate.industry || '')
                 .withGender(candidate.gender || '')
                 .withSocialMedias(candidate.socialMedias || [])
+                .withCountry(candidate.country || '')
+                .withCity(candidate.city || '')
+                .withStatus(candidate.status || false)
                 .withCreatedAt(candidate.createdAt)
                 .build();
         }));
@@ -55,7 +63,6 @@ export class CandidateController {
             .withUserId(candidate.userId.toString())
             .withAvatar(candidate.avatar || '')
             .withName(candidate.name)
-            .withAge(candidate.age || null)
             .withDesignation(candidate.designation || '')
             .withLocation(candidate.location || '')
             .withHourlyRate(candidate.hourlyRate || 0)
@@ -105,6 +112,7 @@ export class CandidateController {
     async UpdatePartitionCandidate(@Param('id') id: string, @Body() data: UpdateCandidateDto) {
         const update = await this.candidateService.UpdatePartition(id, data);
         return {
+            success: true,
             statusCode: HttpStatus.CREATED,
             message: "Cập nhật hồ sơ ứng viên thành công!",
             data: update || {},
@@ -130,6 +138,76 @@ export class CandidateController {
             statusCode: HttpStatus.OK,
             message: "Lấy danh sách danh mục của các ứng viên thành công!",
             results: listIndustry || [],
+        }
+    }
+
+    @Get('details/user/:id')
+    @HttpCode(HttpStatus.OK)
+    async GetCandidateByUserId(@Param('id') id: string) {
+        const candidate = await this.candidateService.getCandidateByUserIdNullable(id);
+        const user = await this.userService.findById(id);
+        let candidateResponse: Partial<CandidateResponseDto> | null = null;
+        if (candidate) {
+            candidateResponse = CandidateResponseDto.builder()
+                .withId(candidate._id.toString())
+                .withEmail(user.email || '')
+                .withUserId(candidate.userId.toString())
+                .withAvatar(candidate.avatar || '')
+                .withName(candidate.name)
+                .withIndustry(candidate.industry || '')
+                .withBirthday(candidate.birthday || null)
+                .withDesignation(candidate.designation || '')
+                .withLocation(candidate.location || '')
+                .withHourlyRate(candidate.hourlyRate || 0)
+                .withTags(candidate.skills || [])
+                .withCategory(candidate.industry || '')
+                .withExperience(candidate.experience || 0)
+                .withQualification(candidate.educationLevel || '')
+                .withGender(candidate.gender || '')
+                .withCreatedAt(candidate.createdAt)
+                .withDescription(candidate.description || '')
+                .withCurrentSalary(candidate.currentSalary || '')
+                .withExpectSalary(candidate.expectSalary || '')
+                .withLanguage(candidate.language || [])
+                .withSocialMedias(candidate.socialMedias || [])
+                .withCountry(candidate.country || '')
+                .withCity(candidate.city || '')
+                .withPhone(candidate.phone || '')
+                .withStatus(candidate.status || false)
+                .build();
+        }
+        return {
+            statusCode: HttpStatus.OK,
+            message: "Lấy thông tin ứng viên thành công!",
+            data: candidateResponse || {},
+        }
+    }
+
+    @Get('industry-list')
+    @HttpCode(HttpStatus.OK)
+    async GetIndustryOfCandidates() {
+        const industries = await this.candidateService.getIndustryOfCandidates();
+        const industryDtos = industries?.map(item => {
+            return IndustryResponseDto.builder() 
+                .withLabel(item)
+                .withValue(item)
+                .build();
+        })  
+        return {
+            statusCode: HttpStatus.OK,
+            message: "Lấy danh sách danh mục công ty thành công!",
+            results: industryDtos || [],
+        }
+    }
+
+    @Get('skill-list')
+    @HttpCode(200)
+    async GetSkillList() {
+        const data = await this.candidateService.GetListByKey('skills');
+        return {
+            statusCode: HttpStatus.OK,
+            message: "Lấy danh sách kỹ năng thành công!",
+            results: data || [],
         }
     }
 }

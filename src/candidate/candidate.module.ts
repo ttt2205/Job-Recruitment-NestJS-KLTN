@@ -1,16 +1,18 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { CandidateService } from './candidate.service';
 import { CandidateController } from './candidate.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Candidate, CandidateSchema } from './candidate.shema';
 import { CandidateAboutModule } from 'src/candidate-about/candidate-about.module';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   providers: [CandidateService],
   controllers: [CandidateController],
   imports: [
     MongooseModule.forFeature([{ name: Candidate.name, schema: CandidateSchema }]),
-    CandidateAboutModule // Importing CandidateAboutModule to use its services
+    CandidateAboutModule, // Importing CandidateAboutModule to use its services
+    forwardRef(() => UserModule) // thêm forwardRef vì UserModule đang phụ thuộc với AuthModule
   ],
   exports: [CandidateService]
 })

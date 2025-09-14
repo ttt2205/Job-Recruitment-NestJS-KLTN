@@ -156,7 +156,7 @@ export class CompanyService {
         return company;
     }
 
-    async getCompanyByUseIdNullable(id: string): Promise<Company | null> {
+    async getCompanyByUserIdNullable(id: string): Promise<Company | null> {
         try {
             return await this.companyModel.findOne({userId: id}).exec();
         } catch (error) {
@@ -252,7 +252,7 @@ export class CompanyService {
 
     async getIndustryOfCompanies() {
         try {
-            const industries = await this.companyModel.find().select("primaryIndustry").exec();
+            const industries = await this.companyModel.distinct("primaryIndustry").exec();
             return industries;
         } catch (error) {
             console.error('Lỗi lấy danh mục công ty:', error.message);

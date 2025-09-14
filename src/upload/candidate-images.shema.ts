@@ -7,8 +7,8 @@ export class CandidateImage {
 
   _id: mongoose.Types.ObjectId;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
-  userId: mongoose.Types.ObjectId;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Candidate', required: true })
+  candidateId: mongoose.Types.ObjectId;
   
   @Prop({ required: true })
   filename: string;

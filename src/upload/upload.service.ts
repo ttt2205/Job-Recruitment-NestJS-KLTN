@@ -7,6 +7,7 @@ import { CompanyService } from 'src/company/company.service';
 import { join } from 'path';
 import { unlink } from 'fs/promises';
 import { combineAll } from 'rxjs';
+import { CandidateService } from 'src/candidate/candidate.service';
 
 const folderCompany = 'companies';
 const folderCandidate = 'candidates';
@@ -16,9 +17,11 @@ export class UploadService {
         // Initialization logic if needed
         @InjectModel(CandidateImage.name) private candidateImageModel: Model<CandidateImage>,
         @InjectModel(CompanyImage.name) private companyImageModel: Model<CompanyImage>,
-        private readonly companyService: CompanyService
+        private readonly companyService: CompanyService,
+        private readonly candidateService: CandidateService
     ) {}
 
+    // Company Image
     async getLogoOfCompanyById(id: string) {
         try {
             const res = await this.companyService.getLogoOfCompany(id);
@@ -108,6 +111,100 @@ export class UploadService {
             console.log("Xóa logo công ty không thành công do lỗi kết nối cơ sở dữ liệu!")
             throw new InternalServerErrorException(
                 'Xóa logo công ty không thành công do lỗi kết nối cơ sở dữ liệu!'
+            );
+        }
+    }
+
+    // Candidate Image
+    async getAvatarOfCandidateById(id: string) {
+        try {
+            const res = await this.candidateService.getAvatarOfCandidate(id);
+            console.log("avatar of candidate: ", res)
+            return res?.avatar;
+        } catch (error) {
+            console.log("Lấy avatar ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!")
+            throw new InternalServerErrorException(
+                'Lấy avatar ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!'
+            );
+        }
+    }
+
+    async getImagesOfCandidateById(id: string) {
+        try {
+            const res = await this.candidateImageModel.find({candidateId: id}).select('filename').exec();
+            console.log("images of candidate: ", res)
+            return res?.map((image) => image.filename);
+        } catch (error) {
+            console.log("Lấy ảnh ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!")
+            throw new InternalServerErrorException(
+                'Lấy ảnh ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!'
+            );
+        }
+    }
+
+    async uploadImageCandidate(candidateId: string, filename: string) {
+        try {
+            const candidateImage = new this.candidateImageModel({
+                candidateId: candidateId,
+                filename: filename,
+            });
+            return (await candidateImage.save()).filename;
+        } catch (error) {
+            console.log("Lưu ảnh ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!")
+            throw new InternalServerErrorException(
+                'Lưu ảnh ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!'
+            );
+        }
+    }
+
+    async uploadAvatarCandidate(candidateId:string, filename: string) {
+        try {
+            const data = await this.candidateService.getCandidateById(candidateId);
+
+            if (data.avatar) {
+                await this.deleteImageFile(folderCandidate, data.avatar);
+            }
+
+            const update = await this.candidateService.UpdatePartition(candidateId, {avatar: filename});
+            return update?.avatar || "";
+        } catch (error) {
+            console.log("Lưu avatar ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!")
+            throw new InternalServerErrorException(
+                'Lưu avatar ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!'
+            );
+        }
+    }
+
+    async deleteImageCandidate(candidateId: string, filename: string) {
+        try {
+            const image = await this.candidateImageModel.findOne({candidateId: candidateId, filename: filename}).exec();
+
+            if (image) {
+                await this.candidateImageModel.deleteOne({candidateId: candidateId, filename: filename}).exec();
+                await this.deleteImageFile(folderCandidate, filename);
+            }
+            return image;
+        } catch (error) {
+            console.log("Xóa ảnh ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!")
+            throw new InternalServerErrorException(
+                'Xóa ảnh ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!'
+            );
+        }
+    }
+
+    async deleteAvatarCandidate(candidateId: string, filename: string) {
+        try {
+            const data = await this.candidateService.UpdatePartition(candidateId, { avatar: ""});
+
+            if (data) {
+                await this.deleteImageFile(folderCandidate, filename);
+            }
+
+            return data;
+        } catch (error) {
+            console.log("Xóa avatar ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!")
+            throw new InternalServerErrorException(
+                'Xóa avatar ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!'
             );
         }
     }

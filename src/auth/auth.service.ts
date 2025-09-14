@@ -74,9 +74,9 @@ export class AuthService {
             let data: Company | Candidate | null = null;
 
             if (type === 'candidate') {
-                data = await this.candidateService.getCandidateByUseIdNullable(id);
+                data = await this.candidateService.getCandidateByUserIdNullable(id);
             } else if (type === 'company') {
-                data = await this.companyService.getCompanyByUseIdNullable(id);
+                data = await this.companyService.getCompanyByUserIdNullable(id);
             } else {
                 throw new Error(`Unsupported user type: ${type}`);
             }

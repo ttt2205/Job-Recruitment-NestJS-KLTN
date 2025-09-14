@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsArray, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength } from "class-validator";
+import { IsArray, IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength } from "class-validator";
 import { SocilMedia } from "src/common/dtos/social-media.dto";
 
 export class CreateCandidateDto {
@@ -15,7 +15,12 @@ export class CreateCandidateDto {
     @IsOptional()
     @Type(() => Date)
     @IsDate({message: "Định dạng ngày sinh không hợp lệ!"})
-    age?: Date;
+    birthday?: Date;
+
+    @IsOptional()
+    @IsString({message: "Số điện thoại không hợp lệ!"})
+    @MaxLength(15, {message: "Số điện thoại không hợp lệ!"})
+    phone?: string;
 
     @IsOptional()
     @IsString({message: "Ngành nghề không hợp lệ!"})
@@ -32,6 +37,14 @@ export class CreateCandidateDto {
     @IsOptional()
     @IsString()
     designation?: string;
+
+    @IsOptional()
+    @IsString()
+    country?: string;
+
+    @IsOptional()
+    @IsString()
+    city?: string;
 
     @IsOptional()
     @IsString()
@@ -71,4 +84,8 @@ export class CreateCandidateDto {
 
     @IsOptional()
     socialMedias?: SocilMedia[];
+
+    @IsOptional()
+    @IsBoolean()
+    status?: boolean = false;
 }
