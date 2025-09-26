@@ -74,7 +74,7 @@ export class CandidateController {
             .withCreatedAt(candidate.createdAt)
             .withDescription(candidate.description || '')
             .withCurrentSalary(candidate.currentSalary || '')
-            .withExpectSalary(candidate.expectSalary || '')
+            .withExpectedSalary(candidate.expectedSalary || '')
             .withLanguage(candidate.language || [])
             .withSocialMedias(candidate.socialMedias || [])
             .build();
@@ -167,7 +167,7 @@ export class CandidateController {
                 .withCreatedAt(candidate.createdAt)
                 .withDescription(candidate.description || '')
                 .withCurrentSalary(candidate.currentSalary || '')
-                .withExpectSalary(candidate.expectSalary || '')
+                .withExpectedSalary(candidate.expectedSalary || '')
                 .withLanguage(candidate.language || [])
                 .withSocialMedias(candidate.socialMedias || [])
                 .withCountry(candidate.country || '')

@@ -5,7 +5,6 @@ import { Model } from 'mongoose';
 import { CreateCompanyDto } from './dtos/create-company.dto';
 import { GlobalException } from 'src/CustomExceptions/global.exception';
 import { UpdateCompanyDto } from './dtos/update-company.dto';
-import { QueryPaginationDto } from 'src/common/dtos/query-pagination.dto';
 import { CompanyQueryDto } from './dtos/company-query.dto';
 import { JobService } from 'src/job/job.service';
 

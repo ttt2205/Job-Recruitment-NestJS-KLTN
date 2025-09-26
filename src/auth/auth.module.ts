@@ -18,7 +18,7 @@ import { HashingProvider } from './provider/hashing.provider.js';
   }],
   imports: [
     forwardRef(() => UserModule),
-    CandidateModule,
+    forwardRef(() => CandidateModule),
     CompanyModule,
     ConfigModule.forFeature(authConfig), // Importing the auth configuration
     JwtModule.registerAsync(authConfig.asProvider()), // Registering JWT module with async configuration

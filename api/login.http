@@ -1,0 +1,11 @@
+@baseUrl = http://localhost:3000
+@token = ""
+
+### LOGIN API
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "thanhtrung22052004@gmail.com",
+  "password": "trung2205"
+}

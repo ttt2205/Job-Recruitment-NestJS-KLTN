@@ -1,62 +1,62 @@
-export class CandidateEducationDto {
-  id: number;
+export class CandidateSectionDto {
+  id: string;
   meta: string;
-  name: string;
   industry: string;
-  year: string;
+  business: string;
+  time: string;
   text: string | null;
 
-    static builder(): CandidateEducationDtoBuilder {
-        return new CandidateEducationDtoBuilder();
+    static builder(): CandidateSectionDtoBuilder {
+        return new CandidateSectionDtoBuilder();
     }
 }
 
-export class CandidateEducationDtoBuilder {
-  private readonly education: CandidateEducationDto;
+export class CandidateSectionDtoBuilder {
+  private readonly section: CandidateSectionDto;
 
   constructor() {
-    this.education = new CandidateEducationDto();
+    this.section = new CandidateSectionDto();
   }
 
-  withId(id: number): this {
-    this.education.id = id;
+  withId(id: string): this {
+    this.section.id = id;
     return this;
   }
 
   withMeta(meta: string): this {
-    this.education.meta = meta;
+    this.section.meta = meta;
     return this;
   }
 
-  withName(name: string): this {
-    this.education.name = name;
+  withBusiness(business: string): this {
+    this.section.business = business;
     return this;
   }
 
   withIndustry(industry: string): this {
-    this.education.industry = industry;
+    this.section.industry = industry;
     return this;
   }
 
-  withYear(year: string): this {
-    this.education.year = year;
+  withTime(time: string): this {
+    this.section.time = time;
     return this;
   }
 
   withText(text: string | null): this {
-    this.education.text = text;
+    this.section.text = text;
     return this;
   }
 
-  build(): CandidateEducationDto {
-    return this.education;
+  build(): CandidateSectionDto {
+    return this.section;
   }
 }
 
 export class CandidateAboutResponseDto {
   title: string;
   themeColor: string;
-  blockList: CandidateEducationDto[];
+  blockList: CandidateSectionDto[];
 
   static builder(): CandidateAboutResponseDtoBuilder {
     return new CandidateAboutResponseDtoBuilder();
@@ -80,7 +80,7 @@ export class CandidateAboutResponseDtoBuilder {
     return this;
   }
 
-  withBlockList(blockList: CandidateEducationDto[]): this {
+  withBlockList(blockList: CandidateSectionDto[]): this {
     this.about.blockList = blockList;
     return this;
   }

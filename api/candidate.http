@@ -24,7 +24,7 @@ Content-Type: application/json
   "description": "Tôi là một lập trình viên backend với hơn 3 năm kinh nghiệm trong việc phát triển các ứng dụng web và dịch vụ RESTful. Tôi có kỹ năng vững chắc trong việc sử dụng Node.js, Express, và MongoDB để xây dựng các hệ thống hiệu quả và mở rộng được. Tôi đam mê công nghệ và luôn cập nhật những xu hướng mới nhất trong lĩnh vực phát triển phần mềm.",
   "experience": "",
   "currentSalary": "",
-  "expectSalary": "",
+  "expectedSalary": "",
   "gender": "male",
   "language": [
     "Tiếng Việt",

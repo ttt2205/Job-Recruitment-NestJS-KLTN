@@ -68,7 +68,7 @@ export class CreateCandidateDto {
 
     @IsOptional()
     @IsString()
-    expectSalary?: string;
+    expectedSalary?: string;
 
     @IsOptional()
     @IsString()

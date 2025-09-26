@@ -1,7 +1,7 @@
 import { HttpException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CandidateAbout } from './candidate-about.shema';
+import { CandidateAbout } from './candidate-about.schema';
 import { CreateCandidateAboutDto } from './dtos/create-candidate-about.dto';
 import { GlobalException } from 'src/CustomExceptions/global.exception';
 import { UpdateCandidateAboutDto } from './dtos/update-candidate-about.dto';
@@ -87,21 +87,15 @@ export class CandidateAboutService {
         }
     }
 
-    async softDeleteService(id: string):Promise<CandidateAbout> {
+    async deleteById(id: string) {
         try {
-            const updated = await this.candidateAboutModel.findByIdAndUpdate(
-                id,
-                { isDeleted: true },
-                { new: true, runValidators: true },
-            );
-    
-            if (!updated) {
+            const deleted = await this.candidateAboutModel.findByIdAndDelete(id);
+            if (!deleted) {
                 throw new NotFoundException(`Không tìm thấy thông tin ứng viên với id: ${id}`);
             }
-    
-            return updated;
+            return deleted;
         } catch (error) {
-            // Nếu lỗi đã là HttpException (gồm cả GlobalException) thì ném lại
+             // Nếu lỗi đã là HttpException (gồm cả GlobalException) thì ném lại
             if (error instanceof HttpException) {
                 throw error;
             }
@@ -113,11 +107,11 @@ export class CandidateAboutService {
         }
     }
 
-    async getByUserId(userId: string) {
+    async getByCandidateId(id: string) {
         try {
-            const candidateAbouts = await this.candidateAboutModel.find({ userId: userId }).exec();
+            const candidateAbouts = await this.candidateAboutModel.find({ candidateId: id }).exec();
             if (!candidateAbouts) {
-                throw new NotFoundException(`Không tìm thấy thông tin ứng viên với userId: ${userId}`);
+                throw new NotFoundException(`Không tìm thấy thông tin ứng viên với userId: ${id}`);
             }
             return candidateAbouts;
         } catch (error) {
@@ -132,4 +126,27 @@ export class CandidateAboutService {
             );
         }
     }
+
+    // <!------------ Helper Functions ------------!>
+    formatTime(start: any, end: any): string {
+        const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short' };
+
+        const startDate = start ? new Date(start) : null;
+        const endDate = end ? new Date(end) : null;
+
+        if (!startDate && !endDate) {
+            return "N/A";
+        }
+
+        const startStr = startDate && !isNaN(startDate.getTime())
+            ? new Intl.DateTimeFormat("en-US", options).format(startDate)
+            : "Invalid";
+
+        const endStr = endDate && !isNaN(endDate.getTime())
+            ? new Intl.DateTimeFormat("en-US", options).format(endDate)
+            : "Present";
+
+        return `${startStr} - ${endStr}`;
+    }
+
 }

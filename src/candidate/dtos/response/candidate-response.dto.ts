@@ -20,7 +20,7 @@ export class CandidateResponseDto {
   phone?: string;
   age: number;
   currentSalary?: string;
-  expectSalary?: string;
+  expectedSalary?: string;
   description?: string;
   language?: string[];
   socialMedias?: {
@@ -140,8 +140,8 @@ export class CandidateResponseDtoBuilder {
     return this;
   }
 
-  withExpectSalary(expectSalary: string): this {
-    this.candidate.expectSalary = expectSalary;
+  withExpectedSalary(expectedSalary: string): this {
+    this.candidate.expectedSalary = expectedSalary;
     return this;
   }
 

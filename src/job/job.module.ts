@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { JobController } from './job.controller';
 import { JobService } from './job.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -18,7 +18,7 @@ import { FilterServiceImpl } from './services/impl/filter.service.impl';
   ],
   imports: [
     MongooseModule.forFeature([{ name: Job.name, schema: JobSchema }]),
-    CompanyModule
+    forwardRef(() => CompanyModule)
   ],
   exports: [JobService]
 })

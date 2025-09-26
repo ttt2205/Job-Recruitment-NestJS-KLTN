@@ -8,20 +8,23 @@ export class CandidateAbout {
 
   _id: mongoose.Types.ObjectId;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
-  userId: mongoose.Types.ObjectId;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Candidate', required: true })
+  candidateId: mongoose.Types.ObjectId;
 
   @Prop({ required: true })
   title: string;
 
   @Prop({ required: true })
-  name: string;
-
-  @Prop({ required: true })
   industry: string;
 
   @Prop({ required: true })
-  time: string;
+  business: string;
+
+  @Prop({ required: false })
+  startTime: Date;
+
+  @Prop({ required: false })
+  endTime: Date;
 
   @Prop({ required: false })
   text?: string;

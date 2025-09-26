@@ -39,7 +39,7 @@ export class AuthService {
             throw new Error('Invalid credentials');
         }
 
-        const accessToken = this.jwtService.signAsync({
+        const accessToken = await this.jwtService.signAsync({
             sub: user._id,
             email: email,
             type: user.type
@@ -102,4 +102,21 @@ export class AuthService {
             throw error;
         }
     }
+
+    parseExpirationToMs(exp: string): number {
+        const match = /^(\d+)([smhd])$/.exec(exp);
+        if (!match) throw new Error(`Invalid expiration format: ${exp}`);
+
+        const value = parseInt(match[1], 10);
+        const unit = match[2];
+
+        switch (unit) {
+            case 's': return value * 1000;
+            case 'm': return value * 60 * 1000;
+            case 'h': return value * 60 * 60 * 1000;
+            case 'd': return value * 24 * 60 * 60 * 1000;
+            default: throw new Error(`Unknown time unit: ${unit}`);
+        }
+    }
+
 }

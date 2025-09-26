@@ -8,15 +8,18 @@ import { join } from 'path';
 import { unlink } from 'fs/promises';
 import { combineAll } from 'rxjs';
 import { CandidateService } from 'src/candidate/candidate.service';
+import { Resume } from 'src/resume/resume.schema';
 
 const folderCompany = 'companies';
 const folderCandidate = 'candidates';
+const folderResume = 'resumes';
 @Injectable()
 export class UploadService {
     constructor(
         // Initialization logic if needed
         @InjectModel(CandidateImage.name) private candidateImageModel: Model<CandidateImage>,
         @InjectModel(CompanyImage.name) private companyImageModel: Model<CompanyImage>,
+        @InjectModel(Resume.name) private resumeModel: Model<Resume>,
         private readonly companyService: CompanyService,
         private readonly candidateService: CandidateService
     ) {}
@@ -205,6 +208,50 @@ export class UploadService {
             console.log("Xóa avatar ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!")
             throw new InternalServerErrorException(
                 'Xóa avatar ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!'
+            );
+        }
+    }
+
+    // <!------------------------- Resume ------------------------------------>
+    async uploadResume(userId:string, filename: string) {
+        try {
+            const checkResumeExistByUserId = await this.resumeModel.findOne({userId: userId}).exec();
+            if (checkResumeExistByUserId) {
+                const data = await this.resumeModel.create({
+                    userId: userId,
+                    fileName: filename,
+                    status: false
+                })
+                return data.fileName;
+            } else {
+                const data = await this.resumeModel.create({
+                    userId: userId,
+                    fileName: filename,
+                    status: true
+                })
+                return data.fileName;
+            }
+        } catch (error) {
+            console.log("Lưu resume ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!")
+            throw new InternalServerErrorException(
+                'Lưu resume ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!'
+            );
+        }
+    }
+
+    async deleteResume(resumeId: string, filename: string) {
+        try {
+            const image = await this.resumeModel.findOne({_id: resumeId}).exec();
+
+            if (image) {
+                await this.resumeModel.deleteOne({_id: resumeId}).exec();
+                await this.deleteImageFile(folderResume, filename);
+            }
+            return image;
+        } catch (error) {
+            console.log("Xóa resume ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!")
+            throw new InternalServerErrorException(
+                'Xóa resume ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!'
             );
         }
     }

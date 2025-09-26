@@ -14,6 +14,7 @@ export class UploadController {
     async getLogoOfComanyById(@Param('id') id: string) {
         const res = await this.uploadService.getLogoOfCompanyById(id);
         return {
+            success: true,
             statusCode: HttpStatus.OK,
             message: "Lấy logo công ty thành công!",
             data: res || ""
@@ -25,6 +26,7 @@ export class UploadController {
     async getImagesOfComanyById(@Param('id') id: string) {
         const res = await this.uploadService.getImagesOfCompanyById(id);
         return {
+            success: true,
             statusCode: HttpStatus.OK,
             message: "Lấy ảnh công ty thành công!",
             results: res || []
@@ -49,6 +51,7 @@ export class UploadController {
         const filename = file.filename; // ✅ tên file đã chỉnh sửa
         const res = await this.uploadService.uploadImageCompany(companyId, filename);
         return {
+            success: true,
             statusCode: HttpStatus.OK,
             message: "Upload ảnh công ty thành công!",
             data: res || ""
@@ -73,6 +76,7 @@ export class UploadController {
         const filename = file.filename; // ✅ tên file đã chỉnh sửa
         const res = await this.uploadService.uploadLogoCompany(companyId, filename);
         return {
+            success: true,
             statusCode: HttpStatus.OK,
             message: "Upload logo công ty thành công!",
             data: res || ""
@@ -87,6 +91,7 @@ export class UploadController {
     ) {
         const res = await this.uploadService.deleteImageCompany(id, filename);
         return {
+            success: true,
             statusCode: HttpStatus.OK,
             message: "Xóa ảnh công ty thành công!",
             data: res || {}
@@ -102,6 +107,7 @@ export class UploadController {
         console.log("filename: ", filename)
         const res = await this.uploadService.deleteLogoCompany(id, filename);
         return {
+            success: true,
             statusCode: HttpStatus.OK,
             message: "Xóa logo công ty thành công!",
             data: res || {}
@@ -114,6 +120,7 @@ export class UploadController {
     async getAvatarOfCandidateById(@Param('id') id: string) {
         const res = await this.uploadService.getAvatarOfCandidateById(id);
         return {
+            success: true,
             statusCode: HttpStatus.OK,
             message: "Lấy avatar ứng viên thành công!",
             data: res || ""
@@ -125,6 +132,7 @@ export class UploadController {
     async getImagesOfCandidateById(@Param('id') id: string) {
         const res = await this.uploadService.getImagesOfCandidateById(id);
         return {
+            success: true,
             statusCode: HttpStatus.OK,
             message: "Lấy avatar ứng viên thành công!",
             results: res || []
@@ -149,6 +157,7 @@ export class UploadController {
         const filename = file.filename; // ✅ tên file đã chỉnh sửa
         const res = await this.uploadService.uploadImageCandidate(id, filename);
         return {
+            success: true,
             statusCode: HttpStatus.OK,
             message: "Upload ảnh ứng viên thành công!",
             data: res || ""
@@ -173,6 +182,7 @@ export class UploadController {
         const filename = file.filename; // ✅ tên file đã chỉnh sửa
         const res = await this.uploadService.uploadAvatarCandidate(id, filename);
         return {
+            success: true,
             statusCode: HttpStatus.OK,
             message: "Upload avatar ứng viên thành công!",
             data: res || ""
@@ -187,6 +197,7 @@ export class UploadController {
     ) {
         const res = await this.uploadService.deleteImageCandidate(id, filename);
         return {
+            success: true,
             statusCode: HttpStatus.OK,
             message: "Xóa ảnh ứng viên thành công!",
             data: res || {}
@@ -202,8 +213,50 @@ export class UploadController {
         console.log("filename: ", filename)
         const res = await this.uploadService.deleteAvatarCandidate(id, filename);
         return {
+            success: true,
             statusCode: HttpStatus.OK,
             message: "Xóa avatar ứng viên thành công!",
+            data: res || {}
+        };
+    }
+
+    // <-- Upload resumes !-->
+    @Post('resume/user/:id')
+    @HttpCode(HttpStatus.OK)
+    @UseInterceptors(
+        FileInterceptor('file', {
+        storage: diskStorage({
+            destination: './images/resumes', // vị trí thư mục lưu ảnh được lưu trên ổ đĩa
+            filename: (req, file, cb) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                const ext = extname(file.originalname);
+                cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+            },
+        }),
+        }),
+    )
+    async uploadResumeFile(@Param('id') userId:string, @UploadedFile() file: Express.Multer.File) {
+        const filename = file.filename; // ✅ tên file đã chỉnh sửa
+        const res = await this.uploadService.uploadResume(userId, filename);
+        return {
+            success: true,
+            statusCode: HttpStatus.OK,
+            message: "Upload resume ứng viên thành công!",
+            data: res || ""
+        };
+    }
+
+    @Delete('resume/:id')
+    @HttpCode(HttpStatus.OK)
+    async deleteResume(
+        @Param('id') id: string,
+        @Body('filename') filename: string
+    ) {
+        const res = await this.uploadService.deleteResume(id, filename);
+        return {
+            success: true,
+            statusCode: HttpStatus.OK,
+            message: "Xóa resume ứng viên thành công!",
             data: res || {}
         };
     }

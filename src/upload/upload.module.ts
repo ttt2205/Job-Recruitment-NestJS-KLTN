@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { UploadController } from './upload.controller';
 import { UploadService } from './upload.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -6,6 +6,7 @@ import { CandidateImage, CandidateImageSchema } from './candidate-images.shema';
 import { CompanyImage, CompanyImageSchema } from './company-images.schema';
 import { CompanyModule } from 'src/company/company.module';
 import { CandidateModule } from 'src/candidate/candidate.module';
+import { ResumeModule } from 'src/resume/resume.module';
 
 @Module({
   controllers: [UploadController],
@@ -16,7 +17,8 @@ import { CandidateModule } from 'src/candidate/candidate.module';
         { name: CompanyImage.name, schema: CompanyImageSchema },
     ]),
     CompanyModule,
-    CandidateModule
+    CandidateModule,
+    forwardRef(() => ResumeModule)
   ]
 })
 export class UploadModule {}

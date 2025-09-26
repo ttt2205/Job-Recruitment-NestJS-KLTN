@@ -3,7 +3,7 @@ import { CandidateAboutService } from './candidate-about.service';
 import { CreateCandidateAboutDto } from './dtos/create-candidate-about.dto';
 import { UpdateCandidateAboutDto } from './dtos/update-candidate-about.dto';
 import { QueryPaginationDto } from 'src/common/dtos/query-pagination.dto';
-import { CandidateAboutResponseDto, CandidateEducationDto } from './dtos/response/candidate-about-response.dto';
+import { CandidateAboutResponseDto, CandidateSectionDto } from './dtos/response/candidate-about-response.dto';
 
 
 @Controller('api/v1/candidate-about')
@@ -26,7 +26,7 @@ export class CandidateAboutController {
                 pageSize: queryPagination.size,
                 totalPages: Math.ceil(total / queryPagination.size),
             },
-            };
+        };
     }
 
     @Get('get-list')
@@ -42,41 +42,57 @@ export class CandidateAboutController {
 
     @Post()
     @HttpCode(201)
-    async CreateCandidate(@Body(new ValidationPipe()) data: CreateCandidateAboutDto) {
-        const candidate = await this.candidateAboutService.createService(data);
+    async CreateCandidateSection(@Body(new ValidationPipe()) data: CreateCandidateAboutDto) {
+        const section = await this.candidateAboutService.createService(data);
+        const sectionDto = CandidateSectionDto.builder()
+            .withId(section._id.toString())
+            .withMeta(section.industry.charAt(0).toUpperCase())
+            .withIndustry(section.industry)
+            .withBusiness(section.business)
+            .withTime(this.candidateAboutService.formatTime(section.startTime, section.endTime))
+            .withText(section?.text || "")
+            .build();
         return {
             statusCode: HttpStatus.CREATED,
             message: "Tạo hồ sơ thông tin ứng viên thành công!",
-            data: candidate || {},
+            data: sectionDto || {},
         }
     }
 
     @Patch(':id')
     @HttpCode(200)
     async UpdatePartitionCandidate(@Param('id') id: string, @Body() data: UpdateCandidateAboutDto) {
-        const update = await this.candidateAboutService.updatePartition(id, data);
+        const section = await this.candidateAboutService.updatePartition(id, data);
+        const sectionDto = CandidateSectionDto.builder()
+            .withId(section._id.toString())
+            .withMeta(section.industry.charAt(0).toUpperCase())
+            .withIndustry(section.industry)
+            .withBusiness(section.business)
+            .withTime(this.candidateAboutService.formatTime(section.startTime, section.endTime))
+            .withText(section?.text || "")
+            .build();
         return {
             statusCode: HttpStatus.CREATED,
             message: "Cập nhật hồ sơ thông tin ứng viên thành công!",
-            data: update || {},
+            data: sectionDto || {},
         }
     }  
 
     @Delete(':id')
     @HttpCode(200)
     async DeleteCandidate(@Param('id') id: string) {
-        const update = await this.candidateAboutService.softDeleteService(id);
+        const deleted = await this.candidateAboutService.deleteById(id);
         return {
             statusCode: HttpStatus.CREATED,
             message: "Xóa hồ sơ thông tin ứng viên thành công!",
-            data: update || {},
+            data: deleted || {},
         }
     }
 
-    @Get('details/user/:userId')
+    @Get('details/candidate/:id')
     @HttpCode(HttpStatus.OK)
-    async GetCandidateAboutByUserId(@Param('userId') id: string) {
-        const candidateAbout = await this.candidateAboutService.getByUserId(id);
+    async GetCandidateAboutByUserId(@Param('id') id: string) {
+        const candidateAbout = await this.candidateAboutService.getByCandidateId(id);
         // Combine candidateAbout with CandidateAboutResponseDto
         let education: CandidateAboutResponseDto = CandidateAboutResponseDto.builder()
             .withTitle('Education')
@@ -98,30 +114,36 @@ export class CandidateAboutController {
             candidateAbout.map(item => {
                 switch (item.title) {
                     case 'Education': {
-                        let blockList: CandidateEducationDto = CandidateEducationDto.builder()
+                        let blockList: CandidateSectionDto = CandidateSectionDto.builder()
+                            .withId(item._id.toString())
                             .withMeta(item.industry.charAt(0).toUpperCase())
                             .withIndustry(item.industry)
-                            .withYear(item.time)
+                            .withBusiness(item.business)
+                            .withTime(this.candidateAboutService.formatTime(item.startTime, item.endTime))
                             .withText(item?.text || "")
                             .build();
                         education.blockList.push(blockList);
                         break;
                     }
                     case 'Work & Experience': {
-                        let blockList: CandidateEducationDto = CandidateEducationDto.builder()
+                        let blockList: CandidateSectionDto = CandidateSectionDto.builder()
+                            .withId(item._id.toString())
                             .withMeta(item.industry.charAt(0).toUpperCase())
                             .withIndustry(item.industry)
-                            .withYear(item.time)
+                            .withBusiness(item.business)
+                            .withTime(this.candidateAboutService.formatTime(item.startTime, item.endTime))
                             .withText(item?.text || "")
                             .build();
                         workAndExperience.blockList.push(blockList);
                         break;
                     }
                     case 'Awards': {
-                        let blockList: CandidateEducationDto = CandidateEducationDto.builder()
+                        let blockList: CandidateSectionDto = CandidateSectionDto.builder()
+                            .withId(item._id.toString())
                             .withMeta(item.industry.charAt(0).toUpperCase())
                             .withIndustry(item.industry)
-                            .withYear(item.time)
+                            .withBusiness(item.business)
+                            .withTime(this.candidateAboutService.formatTime(item.startTime, item.endTime))
                             .withText(item?.text || "")
                             .build();
                         award.blockList.push(blockList);

@@ -64,7 +64,7 @@ export class Candidate {
   currentSalary?: string;
 
   @Prop({ required: false })
-  expectSalary?: string;
+  expectedSalary?: string;
 
   @Prop({ required: false })
   gender?: string;
