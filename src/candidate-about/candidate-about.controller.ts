@@ -83,6 +83,7 @@ export class CandidateAboutController {
     async DeleteCandidate(@Param('id') id: string) {
         const deleted = await this.candidateAboutService.deleteById(id);
         return {
+            success: true,
             statusCode: HttpStatus.CREATED,
             message: "Xóa hồ sơ thông tin ứng viên thành công!",
             data: deleted || {},
