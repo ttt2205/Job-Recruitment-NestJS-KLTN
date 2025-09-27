@@ -46,9 +46,9 @@ export class CandidateAboutController {
         const section = await this.candidateAboutService.createService(data);
         const sectionDto = CandidateSectionDto.builder()
             .withId(section._id.toString())
-            .withMeta(section.industry.charAt(0).toUpperCase())
-            .withIndustry(section.industry)
-            .withBusiness(section.business)
+            .withMeta(section.title.charAt(0).toUpperCase())
+            .withTitle(section.title)
+            .withOrganization(section.organization)
             .withTime(this.candidateAboutService.formatTime(section.startTime, section.endTime))
             .withText(section?.text || "")
             .build();
@@ -65,9 +65,9 @@ export class CandidateAboutController {
         const section = await this.candidateAboutService.updatePartition(id, data);
         const sectionDto = CandidateSectionDto.builder()
             .withId(section._id.toString())
-            .withMeta(section.industry.charAt(0).toUpperCase())
-            .withIndustry(section.industry)
-            .withBusiness(section.business)
+            .withMeta(section.title.charAt(0).toUpperCase())
+            .withTitle(section.title)
+            .withOrganization(section.organization)
             .withTime(this.candidateAboutService.formatTime(section.startTime, section.endTime))
             .withText(section?.text || "")
             .build();
@@ -96,30 +96,30 @@ export class CandidateAboutController {
         const candidateAbout = await this.candidateAboutService.getByCandidateId(id);
         // Combine candidateAbout with CandidateAboutResponseDto
         let education: CandidateAboutResponseDto = CandidateAboutResponseDto.builder()
-            .withTitle('Education')
+            .withCategory('Educations')
             .withThemeColor("")
             .withBlockList([])
             .build();
         let workAndExperience: CandidateAboutResponseDto = CandidateAboutResponseDto.builder()
-            .withTitle('Work & Experience')
+            .withCategory('Works & Experiences')
             .withThemeColor("theme-blue")
             .withBlockList([])
             .build();
         let award: CandidateAboutResponseDto = CandidateAboutResponseDto.builder()
-            .withTitle('Awards')
+            .withCategory('Awards')
             .withThemeColor("theme-yellow")
             .withBlockList([])
             .build();
 
         if (candidateAbout) {
             candidateAbout.map(item => {
-                switch (item.title) {
+                switch (item.category) {
                     case 'Education': {
                         let blockList: CandidateSectionDto = CandidateSectionDto.builder()
                             .withId(item._id.toString())
-                            .withMeta(item.industry.charAt(0).toUpperCase())
-                            .withIndustry(item.industry)
-                            .withBusiness(item.business)
+                            .withMeta(item.title.charAt(0).toUpperCase())
+                            .withTitle(item.title)
+                            .withOrganization(item.organization)
                             .withTime(this.candidateAboutService.formatTime(item.startTime, item.endTime))
                             .withText(item?.text || "")
                             .build();
@@ -129,21 +129,21 @@ export class CandidateAboutController {
                     case 'Work & Experience': {
                         let blockList: CandidateSectionDto = CandidateSectionDto.builder()
                             .withId(item._id.toString())
-                            .withMeta(item.industry.charAt(0).toUpperCase())
-                            .withIndustry(item.industry)
-                            .withBusiness(item.business)
+                            .withMeta(item.title.charAt(0).toUpperCase())
+                            .withTitle(item.title)
+                            .withOrganization(item.organization)
                             .withTime(this.candidateAboutService.formatTime(item.startTime, item.endTime))
                             .withText(item?.text || "")
                             .build();
                         workAndExperience.blockList.push(blockList);
                         break;
                     }
-                    case 'Awards': {
+                    case 'Award': {
                         let blockList: CandidateSectionDto = CandidateSectionDto.builder()
                             .withId(item._id.toString())
-                            .withMeta(item.industry.charAt(0).toUpperCase())
-                            .withIndustry(item.industry)
-                            .withBusiness(item.business)
+                            .withMeta(item.title.charAt(0).toUpperCase())
+                            .withTitle(item.title)
+                            .withOrganization(item.organization)
                             .withTime(this.candidateAboutService.formatTime(item.startTime, item.endTime))
                             .withText(item?.text || "")
                             .build();

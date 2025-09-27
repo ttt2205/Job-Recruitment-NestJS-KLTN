@@ -1,8 +1,8 @@
 export class CandidateSectionDto {
   id: string;
   meta: string;
-  industry: string;
-  business: string;
+  title: string;
+  organization: string;
   time: string;
   text: string | null;
 
@@ -28,13 +28,13 @@ export class CandidateSectionDtoBuilder {
     return this;
   }
 
-  withBusiness(business: string): this {
-    this.section.business = business;
+  withOrganization(organization: string): this {
+    this.section.organization = organization;
     return this;
   }
 
-  withIndustry(industry: string): this {
-    this.section.industry = industry;
+  withTitle(title: string): this {
+    this.section.title = title;
     return this;
   }
 
@@ -54,7 +54,7 @@ export class CandidateSectionDtoBuilder {
 }
 
 export class CandidateAboutResponseDto {
-  title: string;
+  category: string;
   themeColor: string;
   blockList: CandidateSectionDto[];
 
@@ -70,8 +70,8 @@ export class CandidateAboutResponseDtoBuilder {
     this.about = new CandidateAboutResponseDto();
   }
 
-  withTitle(title: string): this {
-    this.about.title = title;
+  withCategory(category: string): this {
+    this.about.category = category;
     return this;
   }
 

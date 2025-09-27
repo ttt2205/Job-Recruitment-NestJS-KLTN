@@ -12,13 +12,13 @@ export class CandidateAbout {
   candidateId: mongoose.Types.ObjectId;
 
   @Prop({ required: true })
+  category: string;
+
+  @Prop({ required: true })
   title: string;
 
   @Prop({ required: true })
-  industry: string;
-
-  @Prop({ required: true })
-  business: string;
+  organization: string;
 
   @Prop({ required: false })
   startTime: Date;
