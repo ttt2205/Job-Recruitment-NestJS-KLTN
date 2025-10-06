@@ -11,9 +11,6 @@ export class Resume {
     @Prop({ required: false })
     fileName?: string;
 
-    @Prop({ required: false })
-    status?: string;
-
     createdAt: Date;
 }
 

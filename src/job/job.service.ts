@@ -262,33 +262,45 @@ export class JobService {
         }
     }
 
-    async GetRelatedJobs(id: string, industryQuery: string, countryQuery: string, cityQuery: string) {
+    async GetRelatedJobs(id: string, industryQuery?: string, countryQuery?: string, cityQuery?: string) {
         try {
+            // 1. Lấy job gốc để biết industry (trong trường hợp không truyền tham số)
+            const currentJob = await this.jobModel.findById(id).exec();
+            if (!currentJob) {
+            throw new NotFoundException('Không tìm thấy công việc hiện tại');
+            }
+
             const combinedQuery: any = {
-                _id: { $ne: new Types.ObjectId(id) },
+            _id: { $ne: new Types.ObjectId(id) }, // loại bỏ job hiện tại
             };
 
+            // 2. Ưu tiên dùng industryQuery, nếu không có thì fallback về currentJob.industry
             if (typeof industryQuery === 'string' && industryQuery.trim() !== '') {
-                combinedQuery.industry = { $regex: industryQuery, $options: 'i' };
+            combinedQuery.industry = { $regex: industryQuery, $options: 'i' };
+            } else {
+            combinedQuery.industry = { $regex: currentJob.industry, $options: 'i' };
             }
 
+            // 3. Thêm điều kiện country nếu có
             if (typeof countryQuery === 'string' && countryQuery.trim() !== '') {
-                combinedQuery.country = { $regex: countryQuery, $options: 'i' };
+            combinedQuery.country = { $regex: countryQuery, $options: 'i' };
             }
 
+            // 4. Thêm điều kiện city nếu có
             if (typeof cityQuery === 'string' && cityQuery.trim() !== '') {
-                combinedQuery.city = { $regex: cityQuery, $options: 'i' };
+            combinedQuery.city = { $regex: cityQuery, $options: 'i' };
             }
+
+            // 5. Tìm job liên quan
             const relatedJobs = await this.jobModel.find(combinedQuery).exec();
-            console.log("relatedJobs: ", relatedJobs)
             return relatedJobs;
         } catch (error) {
             console.error('Lỗi lấy danh sách công việc liên quan:', error.message);
             throw new InternalServerErrorException(
-                'Không thể lấy danh sách công việc liên quan vì lỗi kết nối cơ sở dữ liệu'
+            'Không thể lấy danh sách công việc liên quan vì lỗi kết nối cơ sở dữ liệu'
             );
         }
-    }
+        }
 
     async countJobsByCompanyId(companyId: string) {
         try {

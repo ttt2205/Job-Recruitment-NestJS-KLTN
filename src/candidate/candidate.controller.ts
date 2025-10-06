@@ -183,23 +183,6 @@ export class CandidateController {
         }
     }
 
-    @Get('industry-list')
-    @HttpCode(HttpStatus.OK)
-    async GetIndustryOfCandidates() {
-        const industries = await this.candidateService.getIndustryOfCandidates();
-        const industryDtos = industries?.map(item => {
-            return IndustryResponseDto.builder() 
-                .withLabel(item)
-                .withValue(item)
-                .build();
-        })  
-        return {
-            statusCode: HttpStatus.OK,
-            message: "Lấy danh sách danh mục công ty thành công!",
-            results: industryDtos || [],
-        }
-    }
-
     @Get('skill-list')
     @HttpCode(200)
     async GetSkillList() {

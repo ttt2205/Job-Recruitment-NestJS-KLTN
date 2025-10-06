@@ -9,3 +9,12 @@ Content-Type: application/json
   "email": "thanhtrung22052004@gmail.com",
   "password": "trung2205"
 }
+
+### LOGIN API
+POST {{baseUrl}}/api/v1/auth/logout
+Content-Type: application/json
+
+
+### GET ACCOUNT
+POST {{baseUrl}}/api/v1/auth/logout
+Content-Type: application/json

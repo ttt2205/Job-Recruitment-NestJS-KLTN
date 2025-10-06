@@ -213,24 +213,13 @@ export class UploadService {
     }
 
     // <!------------------------- Resume ------------------------------------>
-    async uploadResume(userId:string, filename: string) {
+    async uploadResume(candidateId:string, filename: string) {
         try {
-            const checkResumeExistByUserId = await this.resumeModel.findOne({userId: userId}).exec();
-            if (checkResumeExistByUserId) {
-                const data = await this.resumeModel.create({
-                    userId: userId,
-                    fileName: filename,
-                    status: false
-                })
-                return data.fileName;
-            } else {
-                const data = await this.resumeModel.create({
-                    userId: userId,
-                    fileName: filename,
-                    status: true
-                })
-                return data.fileName;
-            }
+            const data = await this.resumeModel.create({
+                candidateId: candidateId,
+                fileName: filename
+            })
+            return data;
         } catch (error) {
             console.log("Lưu resume ứng viên không thành công do lỗi kết nối cơ sở dữ liệu!")
             throw new InternalServerErrorException(

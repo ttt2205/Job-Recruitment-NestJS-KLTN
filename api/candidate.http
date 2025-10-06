@@ -1,12 +1,12 @@
 @baseUrl = http://localhost:3000
 @token = ""
 
-# GET list company pagination
+# POST NEW CANDIDATE
 POST  {{baseUrl}}/api/v1/candidate
 Content-Type: application/json
 
 {
-  "userId": "686cb5b802a159956bb2a370",
+  "userId": "686cb5d902a159956bb2a372",
   "name": "Tăng Thành Trung",
   "birthday": null,
   "phone": "0773735100",
@@ -33,3 +33,68 @@ Content-Type: application/json
   "educationLevel": "Đại học",
   "socialMedias": []
 }
+
+# GET LIST PAGINATION CANDIDATE
+# page: number;
+# size: number;
+# sort?: string;
+# search?: string;
+# location?: string;
+# industry?: string;
+# experience?: number;
+# education?: string;
+# gender?: string;
+
+GET {{baseUrl}}/api/v1/candidate?page=1&size=10
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+# GET DETAIL CANDIDATE BY ID
+# api: api/v1/candidate/details/:id
+
+GET {{baseUrl}}/api/v1/candidate/details/68be91be9bf7f4178721d9fe
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+# GET LIST CANDIDATE
+
+GET {{baseUrl}}/api/v1/candidate/get-list
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+# GET LIST INDUSTRY
+
+GET {{baseUrl}}/api/v1/candidate/industry-list
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+# GET LIST SKILLS
+
+GET {{baseUrl}}/api/v1/candidate/skill-list
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+# GET DETAIL CANDIDATE BY ID
+# api: api/v1/candidate/details/user/:id
+
+GET {{baseUrl}}/api/v1/candidate/details/user/686cb5b802a159956bb2a370
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+# POST NEW CANDIDATE
+
+POST {{baseUrl}}/api/v1/candidate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+# PATCH CANDIDATE
+
+PATCH {{baseUrl}}/api/v1/candidate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+# DELETE CANDIDATE
+
+DELETE {{baseUrl}}/api/v1/candidate/:id
+Authorization: Bearer {{token}}
+Content-Type: application/json

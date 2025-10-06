@@ -1,0 +1,26 @@
+@baseUrl = http://localhost:3000
+@token = ""
+
+# POST NEW CANDIDATE SECTION
+
+POST {{baseUrl}}/api/v1/candidate-about
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+# PATCH CANDIDATE SECTION
+
+PATCH {{baseUrl}}/api/v1/candidate-about/:id
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+# DELETE CANDIDATE SECTION
+
+DELETE {{baseUrl}}/api/v1/candidate-about/:id
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+# GET CANDIDATE SECTION OF CANDIDATE BY ID
+
+GET {{baseUrl}}/api/v1/candidate-about/details/candidate/68be91be9bf7f4178721d9fe
+Authorization: Bearer {{token}}
+Content-Type: application/json

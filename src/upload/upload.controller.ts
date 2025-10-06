@@ -1,12 +1,18 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { memoryStorage, diskStorage } from 'multer';
+import { basename, extname } from 'path';
 import { UploadService } from './upload.service';
+import { ResumeResponseDto } from 'src/resume/dtos/response/resume.response.dto';
+import { ResumeService } from 'src/resume/resume.service';
+import * as fs from 'fs';
 
 @Controller('api/v1/upload')
 export class UploadController {
-    constructor(private readonly uploadService: UploadService) {}
+    constructor(
+        private readonly uploadService: UploadService,
+        private readonly resumeService: ResumeService
+    ) {}
 
     // <-- Upload company logo and images !-->
     @Get('logo/company/:id')
@@ -221,28 +227,75 @@ export class UploadController {
     }
 
     // <-- Upload resumes !-->
-    @Post('resume/user/:id')
-    @HttpCode(HttpStatus.OK)
-    @UseInterceptors(
-        FileInterceptor('file', {
-        storage: diskStorage({
-            destination: './images/resumes', // vị trí thư mục lưu ảnh được lưu trên ổ đĩa
-            filename: (req, file, cb) => {
-                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-                const ext = extname(file.originalname);
-                cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-            },
-        }),
-        }),
-    )
-    async uploadResumeFile(@Param('id') userId:string, @UploadedFile() file: Express.Multer.File) {
-        const filename = file.filename; // ✅ tên file đã chỉnh sửa
-        const res = await this.uploadService.uploadResume(userId, filename);
+    // @Post('resume/candidate/:id')
+    // @HttpCode(HttpStatus.OK)
+    // @UseInterceptors(
+    //     FileInterceptor('file', {
+    //     storage: diskStorage({
+    //         destination: './images/resumes', // vị trí thư mục lưu ảnh được lưu trên ổ đĩa
+    //         filename: (req, file, cb) => {
+    //             // Lấy phần tên file gốc, không bao gồm phần mở rộng
+    //             const originalName = basename(file.originalname, extname(file.originalname));
+
+    //             // Tạo phần hậu tố ngẫu nhiên
+    //             const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+
+    //             // Giữ nguyên tên gốc + uniqueSuffix + phần mở rộng
+    //             const ext = extname(file.originalname);
+    //             const fileName = `${originalName}-${uniqueSuffix}${ext}`;
+
+    //             cb(null, fileName);
+    //         },
+    //     }),
+    //     }),
+    // )
+    // async uploadResumeFile(@Param('id') candidateId:string, @UploadedFile() file: Express.Multer.File) {
+    //     const filename = file.filename; // ✅ tên file đã chỉnh sửa
+    //     const res = await this.uploadService.uploadResume(candidateId, filename);
+    //     const responseDto = res
+    //     ? ResumeResponseDto.builder()
+    //         .withId(res._id.toString())
+    //         .withCandidateId(res.candidateId.toString())
+    //         .withFileName(res.fileName || "")
+    //         .build()
+    //     : {};
+
+    //     return {
+    //         success: true,
+    //         statusCode: HttpStatus.OK,
+    //         message: "Upload resume ứng viên thành công!",
+    //         data: responseDto
+    //     };
+    // }
+
+    @Post('resume/candidate/:id')
+    @HttpCode(HttpStatus.CREATED)
+    @UseInterceptors(FileInterceptor('file', {
+        storage: memoryStorage(), // lưu tạm vào memory
+    }))
+    async uploadResumeFile(@Param('id') candidateId: string, @UploadedFile() file: Express.Multer.File) {
+        const existingFiles = await this.resumeService.getTheNumberOfResumesByCandidateId(candidateId);
+        if (existingFiles >= 10) {
+            throw new BadRequestException('Ứng viên đã đạt tối đa 10 CV, không thể upload thêm.');
+        }
+
+        // Lưu file từ memory vào disk
+        const ext = extname(file.originalname);
+        const fileName = `${basename(file.originalname, ext)}-${Date.now()}${ext}`;
+        await fs.promises.writeFile(`./images/resumes/${fileName}`, file.buffer);
+
+        // Lưu info vào DB
+        const res = await this.uploadService.uploadResume(candidateId, fileName);
+
         return {
             success: true,
             statusCode: HttpStatus.OK,
             message: "Upload resume ứng viên thành công!",
-            data: res || ""
+            data: ResumeResponseDto.builder()
+                .withId(res._id.toString())
+                .withCandidateId(res.candidateId.toString())
+                .withFileName(res.fileName || "")
+                .build(),
         };
     }
 
@@ -252,12 +305,11 @@ export class UploadController {
         @Param('id') id: string,
         @Body('filename') filename: string
     ) {
-        const res = await this.uploadService.deleteResume(id, filename);
+        await this.uploadService.deleteResume(id, filename);
         return {
             success: true,
             statusCode: HttpStatus.OK,
-            message: "Xóa resume ứng viên thành công!",
-            data: res || {}
+            message: "Xóa resume ứng viên thành công!"
         };
     }
 }

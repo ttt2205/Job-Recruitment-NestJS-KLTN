@@ -1,6 +1,25 @@
 @baseUrl = http://localhost:3000
 @token = ""
 
+# GET LIST PAGINATION JOB
+# search?: string;
+# location?: string;
+# category?: string;
+# type?: string;
+# datePosted?: string;
+# experience?: string;
+# min?: number;
+# max?: number;
+
+GET {{baseUrl}}/api/v1/job?page=1&size=10
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+# GET LIST JOB FOR CLIENT OF COMPANY
+
+GET  {{baseUrl}}/api/v1/job/get-list
+Content-Type: application/json
+
 # GET list job by company id request
 GET  {{baseUrl}}/api/v1/job/get-list/dashboard/company/68736afc61942cb6f1e0141c
 Content-Type: application/json
@@ -8,6 +27,50 @@ Content-Type: application/json
 # GET list industry of job by key and company id request
 GET  {{baseUrl}}/api/v1/job/category-list/company/68736afc61942cb6f1e0141c
 Content-Type: application/json
+
+# GET detail by job id
+
+GET  {{baseUrl}}/api/v1/job/detail/689307de1152ccfb7a7d3468
+Content-Type: application/json
+
+# GET LIST CATEGORY = INDUSTRY OF JOB
+
+GET  {{baseUrl}}/api/v1/job/category-list
+Content-Type: application/json
+
+# GET LIST PRIMARY INDUSTRY OF COMPANY
+
+GET  {{baseUrl}}/api/v1/job/category-list/company/68736afc61942cb6f1e0141c
+Content-Type: application/json
+
+# GET LIST SKILLS
+
+GET  {{baseUrl}}/api/v1/job/skill-list
+Content-Type: application/json
+
+# GET LIST CITIES
+
+GET  {{baseUrl}}/api/v1/job/city-list
+Content-Type: application/json
+
+# GET MAX SALARY
+
+GET  {{baseUrl}}/api/v1/job/max-salary
+Content-Type: application/json
+
+# GET RELATED JOBS BY ID
+# industry: string
+# country: string
+# city: string
+
+GET  {{baseUrl}}/api/v1/job/related-jobs/689307de1152ccfb7a7d3468
+Content-Type: application/json
+
+# GET LIST JOB DASHBOARD OF COMPANY BY ID
+
+GET  {{baseUrl}}/api/v1/job/get-list/dashboard/company/68736afc61942cb6f1e0141c
+Content-Type: application/json
+
 
 ###
 

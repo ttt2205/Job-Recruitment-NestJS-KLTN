@@ -1,6 +1,60 @@
 @baseUrl = http://localhost:3000
 @token = ""
 
-# GET list company pagination
+# GET LIST PAGINATION COMPANY
+# page: number;
+# size: number;
+# sort?: string;
+# search?: string;
+# location?: string;
+# primaryIndustry?: string;
+# foundationDateMin?: number;
+# foundationDateMax?: number;
+
 GET  {{baseUrl}}/api/v1/company?page=1&size=10&sort=&search=&location=&primaryIndustry=&foundationDateMin=1900&foundationDateMax=2025
+Content-Type: application/json
+
+# GET LIST COMPANY
+
+GET  {{baseUrl}}/api/v1/company/get-list
+Content-Type: application/json
+
+# GET DETAIL COMPANY BY ID
+# API: api/v1/company/details/:id
+
+GET  {{baseUrl}}/api/v1/company/details/68736afc61942cb6f1e0141c
+Content-Type: application/json
+
+# GET DETAIL COMPANY BY USER ID
+# API: api/v1/company/details/user/:id
+
+GET  {{baseUrl}}/api/v1/company/details/user/686f5683f6e123fa2042954f
+Content-Type: application/json
+
+# GET RELATED JOB OF COMPANY BY ID
+# API: api/v1/company/related-jobs/:companyId
+
+GET  {{baseUrl}}/api/v1/company/related-jobs/68736afc61942cb6f1e0141c
+Content-Type: application/json
+
+# GET INDUSTRY LIST OF COMPANY
+# API: api/v1/company/industry-list
+
+GET  {{baseUrl}}/api/v1/company/industry-list
+Content-Type: application/json
+
+# POST NEW COMPANY
+
+POST  {{baseUrl}}/api/v1/company
+Content-Type: application/json
+
+# PATCH NEW COMPANY
+
+PATCH  {{baseUrl}}/api/v1/company/:id
+Content-Type: application/json
+
+# DELETE COMPANY
+
+DELETE {{baseUrl}}/api/v1/company/:id
+Authorization: Bearer {{token}}
 Content-Type: application/json
