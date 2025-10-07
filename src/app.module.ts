@@ -13,6 +13,11 @@ import { CandidateAboutModule } from './candidate-about/candidate-about.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UploadModule } from './upload/upload.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ApplicationModule } from './application/application.module';
+import { ServicePackageModule } from './service-package/service-package.module';
+import { SubcriptionModule } from './subcription/subcription.module';
+import { BlogModule } from './blog/blog.module';
+import { NotificationModule } from './notification/notification.module';
 import authConfig from './auth/config/auth.config';
 
 const ENV = process.env.NODE_ENV;
@@ -47,6 +52,11 @@ const envFilePath = !ENV ? `.env` : `.env.${ENV}`;
     CandidateModule,
     CandidateAboutModule,
     UploadModule,
+    ApplicationModule,
+    ServicePackageModule,
+    SubcriptionModule,
+    BlogModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
