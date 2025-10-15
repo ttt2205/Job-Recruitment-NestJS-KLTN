@@ -126,6 +126,7 @@ export class JobService {
           datePostedCondition,
           salaryCondition,
           expirationDate,
+          { status: true }, // chỉ lấy job đang hoạt động
         ],
       };
 
