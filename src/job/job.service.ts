@@ -12,41 +12,22 @@ import { CreateJobDto } from './dtos/create-job.dto';
 import { GlobalException } from 'src/CustomExceptions/global.exception';
 import { UpdateJobDto } from './dtos/update-job.dto';
 import { JobQueryDto } from './dtos/job-query.dto';
+import { handleServiceError } from 'src/common/helpers/handle.service.error';
 
 @Injectable()
 export class JobService {
   constructor(@InjectModel(Job.name) private jobModel: Model<Job>) {}
 
-  async CreateService(data: CreateJobDto) {
+  async createService(data: CreateJobDto) {
     try {
-      const existJob = await this.jobModel.findOne({
-        companyId: data.companyId,
-        name: data.name,
-      });
-      if (existJob) {
-        throw new GlobalException(
-          'Công việc đã tồn tại!',
-          'Công việc',
-          'đã tồn tại',
-          HttpStatus.CONFLICT,
-        );
-      }
       const job = await this.jobModel.create(data);
       return job;
     } catch (error) {
-      // Nếu lỗi đã là HttpException (gồm cả GlobalException) thì ném lại
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      console.error('Lỗi tạo công việc:', error.message);
-      throw new InternalServerErrorException(
-        'Không thể tạo công việc vì lỗi kết nối cơ sở dữ liệu',
-      );
+      handleServiceError(error, 'JobService.CreateService');
     }
   }
 
-  async GetListPagination(queryPagination: JobQueryDto) {
+  async getPaginationForCandidate(queryPagination: JobQueryDto) {
     try {
       // Size
       const skip = (queryPagination.page - 1) * queryPagination.size;
@@ -101,38 +82,14 @@ export class JobService {
       // Date posted condition (giả sử lọc theo số ngày gần đây)
       let datePostedCondition = {};
 
-      if (datePosted && datePosted !== 'all') {
+      if (datePosted && datePosted !== 0) {
         const now = new Date();
-        let fromDate: Date | null = null;
+        const fromDate = new Date(now);
+        fromDate.setDate(fromDate.getDate() - datePosted); // trừ đi số ngày tương ứng
 
-        switch (datePosted) {
-          case 'last-hour':
-            fromDate = new Date(now.getTime() - 1 * 60 * 60 * 1000); // 1 giờ
-            break;
-          case 'last-24-hour':
-            fromDate = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 24 giờ
-            break;
-          case 'last-7-days':
-            fromDate = new Date(now); // copy now
-            fromDate.setDate(fromDate.getDate() - 7); // trừ 7 ngày
-            break;
-          case 'last-14-days':
-            fromDate = new Date(now); // copy now
-            fromDate.setDate(fromDate.getDate() - 14); // trừ 14 ngày
-            break;
-          case 'last-30-days':
-            fromDate = new Date(now); // copy now
-            fromDate.setDate(fromDate.getDate() - 30); // trừ 30 ngày
-            break;
-          default:
-            break;
-        }
-
-        if (fromDate) {
-          datePostedCondition = {
-            createdAt: { $gte: fromDate },
-          };
-        }
+        datePostedCondition = {
+          createdAt: { $gte: fromDate },
+        };
       }
 
       // Salary condition
@@ -153,6 +110,11 @@ export class JobService {
         salaryCondition['salary.currency'] = currency;
       }
 
+      // Công việc phải còn hạn
+      const expirationDate = {
+        expirationDate: { $gte: new Date() },
+      };
+
       // Combine all conditions
       const combinedQuery = {
         $and: [
@@ -163,6 +125,7 @@ export class JobService {
           experienceCondition,
           datePostedCondition,
           salaryCondition,
+          expirationDate,
         ],
       };
 
@@ -177,10 +140,7 @@ export class JobService {
       ]);
       return { data, total };
     } catch (error) {
-      console.error('Lỗi kết nối cơ sở dữ liệu:', error);
-      throw new InternalServerErrorException(
-        'Không thể lấy danh sách công việc vì lỗi kết nối cơ sở dữ liệu',
-      );
+      handleServiceError(error, 'JobService.getPaginationForCandidate');
     }
   }
 
@@ -197,17 +157,18 @@ export class JobService {
 
   async GetById(id: string) {
     try {
-      const job = this.jobModel.findById(id).exec();
+      const job = await this.jobModel.findById(id).exec();
+      console.log('job: ', job);
+      if (!job) {
+        throw new NotFoundException(`Không tìm thấy công việc với id = ${id}`);
+      }
       return job;
     } catch (error) {
-      console.error('Lỗi kết nối cơ sở dữ liệu:', error.message);
-      throw new InternalServerErrorException(
-        'Không thể lấy công việc vì lỗi kết nối cơ sở dữ liệu',
-      );
+      handleServiceError(error, 'JobService.GetById');
     }
   }
 
-  async UpdatePartition(id: string, data: UpdateJobDto): Promise<Job> {
+  async updatePartition(id: string, data: UpdateJobDto): Promise<Job> {
     try {
       const updated = await this.jobModel.findByIdAndUpdate(id, data, {
         new: true,
@@ -220,15 +181,7 @@ export class JobService {
 
       return updated;
     } catch (error) {
-      // Nếu lỗi đã là HttpException (gồm cả GlobalException) thì ném lại
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      console.error('Lỗi cập nhật công việc:', error.message);
-      throw new InternalServerErrorException(
-        'Không thể cập nhật công việc vì lỗi kết nối cơ sở dữ liệu',
-      );
+      handleServiceError(error, 'JobService.UpdatePartition');
     }
   }
 
@@ -400,21 +353,37 @@ export class JobService {
     }
   }
 
-  async GetListJobByCompanyId(id: string) {
+  async getPaginationByCompanyId(id: string, queryPagination: JobQueryDto) {
     try {
-      const listValue = await this.jobModel
-        .find({
-          companyId: id,
-        })
-        .exec();
-      return listValue || [];
+      // Size
+      const skip = (queryPagination.page - 1) * queryPagination.size;
+      // Tạo query
+      let query: any = {
+        companyId: id,
+      };
+
+      if (queryPagination.category && queryPagination.category.trim() !== '') {
+        query.industry = queryPagination.category;
+      }
+
+      if (queryPagination.datePosted && queryPagination.datePosted > 0) {
+        const now = new Date();
+        const fromDate = new Date(now);
+        fromDate.setDate(fromDate.getDate() - queryPagination.datePosted); // trừ đi số ngày tương ứng
+
+        query.createdAt = { $gte: queryPagination.datePosted };
+      }
+
+      // Query with MongoDB:
+      const [data, total] = await Promise.all([
+        this.jobModel.find(query).skip(skip).limit(queryPagination.size).exec(),
+        this.jobModel.countDocuments().exec(),
+      ]);
+      return { data, total };
     } catch (error) {
-      console.error(
-        `Lỗi lấy danh sách  công việc theo companyId:`,
-        error.message,
-      );
+      console.error('Lỗi kết nối cơ sở dữ liệu:', error.message);
       throw new InternalServerErrorException(
-        `Không thể lấy danh sách công việc theo companyId vì lỗi kết nối cơ sở dữ liệu`,
+        'Không thể lấy danh sách công việc của công ty vì lỗi kết nối cơ sở dữ liệu',
       );
     }
   }

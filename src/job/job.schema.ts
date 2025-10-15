@@ -1,4 +1,3 @@
-
 // user.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
@@ -18,13 +17,16 @@ class UserRef {
 
 @Schema({ timestamps: true })
 export class Job {
-
   _id: mongoose.Types.ObjectId;
 
   @Prop({ required: true })
   name: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company',
+    required: true,
+  })
   companyId: mongoose.Types.ObjectId;
 
   @Prop({ required: false }) // Mảng kỹ năng tham chiếu
@@ -34,8 +36,8 @@ export class Job {
   description?: string;
 
   @Prop({ type: [JobTypeSchema], required: false })
-  jobType?: JobType[]
-  
+  jobType?: JobType[];
+
   @Prop({ type: SalaryTemplate, required: false })
   salary?: SalaryTemplate;
 
@@ -69,10 +71,10 @@ export class Job {
   @Prop({ required: true })
   location: string;
 
-  @Prop({ type: Date ,required: true })
+  @Prop({ type: Date, required: true })
   expirationDate: Date;
 
-  @Prop({  required: false })
+  @Prop({ required: false })
   status?: boolean;
 
   @Prop({ type: UserRef, required: false })
@@ -83,9 +85,6 @@ export class Job {
 
   @Prop({ type: UserRef, required: false })
   deletedBy?: UserRef;
-
-  @Prop({ default: true })
-  isActive: boolean;
 
   @Prop({ default: false })
   isDeleted: boolean;

@@ -21,7 +21,7 @@ class JobBaseDto {
   type?: string;
 
   @IsOptional()
-  datePosted?: string;
+  datePosted?: number;
 
   @IsOptional()
   @IsString()

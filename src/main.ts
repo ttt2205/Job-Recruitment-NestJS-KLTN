@@ -1,20 +1,22 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { NestExpressApplication } from '@nestjs/platform-express'; 
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-    transformOptions: {
-      enableImplicitConversion: true, // Tự động chuyển đổi kiểu cho dữ liệu đầu vào từ url
-    }
-  }))
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true, // Tự động chuyển đổi kiểu cho dữ liệu đầu vào từ url
+      },
+    }),
+  );
 
   app.use(cookieParser()); // bắt buộc nếu muốn có req.cookies
 
@@ -23,8 +25,8 @@ async function bootstrap() {
     credentials: true, // 👈 cho phép gửi cookie
   });
 
-  app.useStaticAssets(join(__dirname, '..', 'images'), {
-    prefix: '/images', // ảnh sẽ truy cập tại http://localhost:3000/images/...
+  app.useStaticAssets(join(process.cwd(), 'images'), {
+    prefix: '/images',
   });
   await app.listen(process.env.PORT ?? 3000);
 }

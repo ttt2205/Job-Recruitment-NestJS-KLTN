@@ -1,3 +1,8 @@
+import { JobQueryDto } from '../dtos/job-query.dto';
+
 export abstract class FilterService {
-    abstract filterJobsByCompanyIdForDashboard(id: string | number, category?: string, time?: number): Promise<any[]>;
+  abstract filterJobsByCompanyIdForDashboard(
+    id: string | number,
+    queryPagination: JobQueryDto,
+  );
 }
