@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   forwardRef,
   Inject,
   Injectable,
@@ -38,6 +39,10 @@ export class AuthService {
     try {
       // Validate user credentials
       const user = await this.userService.findByEmail(email);
+
+      if (!user) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
 
       const equalPassword = await this.hashingProvider.comparePasswords(
         password,
@@ -112,6 +117,19 @@ export class AuthService {
       }
 
       handleServiceError(error, 'AuthService.getAccount');
+    }
+  }
+
+  async registerAccount(email: string, password: string, type: string) {
+    try {
+      const createdUser = await this.userService.createUser({
+        email,
+        password,
+        type,
+      });
+      return createdUser;
+    } catch (error) {
+      handleServiceError(error, 'AuthService.registerAccount');
     }
   }
 

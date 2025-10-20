@@ -13,7 +13,6 @@ class UserRef {
 
 @Schema({ timestamps: true })
 export class User {
-
   _id: mongoose.Types.ObjectId;
 
   @Prop({ unique: true, required: true })
@@ -26,7 +25,7 @@ export class User {
   type: string; // admin, company, candidate
 
   @Prop({ default: true })
-  isActive: boolean;
+  status: boolean;
 
   @Prop({ type: UserRef, required: false })
   createdBy?: UserRef;
@@ -39,6 +38,12 @@ export class User {
 
   @Prop({ default: false })
   isDeleted: boolean;
+
+  createdAt: Date;
+
+  updatedAt: Date;
+
+  deletedAt: Date;
 }
 
 // Tạo kiểu Document

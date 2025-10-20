@@ -12,7 +12,7 @@ import {
   UnauthorizedException,
   ValidationPipe,
 } from '@nestjs/common';
-import { LoginRequestDto } from './dtos/login-request.dto';
+import { LoginRequestDto } from './dtos/requests/login-request.dto';
 import { AuthService } from './auth.service';
 import { CandidateResponseDto } from 'src/candidate/dtos/response/candidate-response.dto';
 import { Candidate } from 'src/candidate/candidate.shema';
@@ -20,6 +20,8 @@ import { Company } from 'src/company/company.schema';
 import { CompanyResponseDto } from 'src/company/dtos/response/company-response.dto';
 import { Response, Request } from 'express';
 import { handleServiceError } from 'src/common/helpers/handle.service.error';
+import { RegisterRequestDto } from './dtos/requests/register.request.dto';
+import { UserResponseDto } from 'src/user/dtos/responses/user.response.dto';
 
 @Controller('api/v1/auth')
 export class AuthController {
@@ -27,7 +29,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(
+  async Login(
     @Body(new ValidationPipe()) req: LoginRequestDto,
     @Res({ passthrough: true }) res: Response,
   ) {
@@ -51,6 +53,31 @@ export class AuthController {
       success: true,
       statusCode: HttpStatus.OK,
       message: 'Login successful',
+    };
+  }
+
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  async Register(@Body(new ValidationPipe()) req: RegisterRequestDto) {
+    // Logic for user registration
+    const user = await this.authService.registerAccount(
+      req.email,
+      req.password,
+      req.type,
+    );
+    const userDto = UserResponseDto.builder()
+      .withId(user._id.toString())
+      .withEmail(user.email)
+      .withType(user.type)
+      .withStatus(user.status)
+      .withCreatedAt(user.createdAt)
+      .withUpdatedAt(user.updatedAt)
+      .build();
+    return {
+      success: true,
+      statusCode: HttpStatus.CREATED,
+      message: 'Register successful',
+      data: userDto || {},
     };
   }
 
