@@ -18,8 +18,6 @@ import { JobQueryDto } from './dtos/job-query.dto';
 import { CompanyService } from 'src/company/company.service';
 import { JobResponseDto } from './dtos/response/job-response.dto';
 import { CompanyResponseDto } from 'src/company/dtos/response/company-response.dto';
-import { FilterService } from './services/filter.service';
-import { QueryPaginationDto } from 'src/common/dtos/query-pagination.dto';
 
 @Controller('api/v1/job')
 export class JobController {

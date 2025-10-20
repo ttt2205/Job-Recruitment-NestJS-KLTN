@@ -1,4 +1,4 @@
-import { CompanyResponseDto } from "src/company/dtos/response/company-response.dto"; 
+import { CompanyResponseDto } from 'src/company/dtos/response/company-response.dto';
 
 export class JobResponseDto {
   id: string;
@@ -10,15 +10,15 @@ export class JobResponseDto {
   responsibilities: string[];
   skillAndExperience: string[];
   salary: {
-    min: number,
-    max: number,
-    currency: string,
-    unit: string,
-    negotiable: boolean
+    min: number;
+    max: number;
+    currency: string;
+    unit: string;
+    negotiable: boolean;
   } | null;
   workTime: {
-    from: string,
-    to: string,
+    from: string;
+    to: string;
   } | null;
   industry: string;
   quantity: number;
@@ -42,7 +42,7 @@ export class JobResponseDto {
     min: number;
     max: number;
   };
-  applications: number|null;
+  applications: number | null;
   status: boolean;
 
   static builder(): JobResponseDtoBuilder {
@@ -51,124 +51,126 @@ export class JobResponseDto {
 }
 
 export class JobResponseDtoBuilder {
-    private readonly job: JobResponseDto;
+  private readonly job: JobResponseDto;
 
-    constructor() {
-        this.job = new JobResponseDto();
-    }
+  constructor() {
+    this.job = new JobResponseDto();
+  }
 
-    withId(id: string): this {
-        this.job.id = id;
-        return this;
-    }
+  withId(id: string): this {
+    this.job.id = id;
+    return this;
+  }
 
-    withLogo(logo: string): this {
-        this.job.logo = logo;
-        return this;
-    }
+  withLogo(logo: string): this {
+    this.job.logo = logo;
+    return this;
+  }
 
-    withWebsite(website: string | null): this {
-        this.job.website = website;
-        return this;
-    }
+  withWebsite(website: string | null): this {
+    this.job.website = website;
+    return this;
+  }
 
-    withJobTitle(title: string): this {
-        this.job.jobTitle = title;
-        return this;
-    }
+  withJobTitle(title: string): this {
+    this.job.jobTitle = title;
+    return this;
+  }
 
-    withCompany(company: Partial<CompanyResponseDto> | null): this {
-        this.job.company = company;
-        return this;
-    }
+  withCompany(company: Partial<CompanyResponseDto> | null): this {
+    this.job.company = company;
+    return this;
+  }
 
-    withQuantity(quantity: number): this {
-        this.job.quantity = quantity;
-        return this;
-    }
+  withQuantity(quantity: number): this {
+    this.job.quantity = quantity;
+    return this;
+  }
 
-    withIndustry(industry: string): this {
-        this.job.industry = industry;
-        return this;
-    }
+  withIndustry(industry: string): this {
+    this.job.industry = industry;
+    return this;
+  }
 
-    withCountry(country: string): this {
-        this.job.country = country;
-        return this;
-    }
+  withCountry(country: string): this {
+    this.job.country = country;
+    return this;
+  }
 
-    withCity(city: string): this {
-        this.job.city = city;
-        return this;
-    }
+  withCity(city: string): this {
+    this.job.city = city;
+    return this;
+  }
 
-    withLocation(location: string): this {
-        this.job.location = location;
-        return this;
-    }
+  withLocation(location: string): this {
+    this.job.location = location;
+    return this;
+  }
 
-    withSalary(salary: {
-        min: number,
-        max: number,
-        currency: string,
-        unit: string,
-        negotiable: boolean
-    } | null): this {
-        this.job.salary = salary;
-        return this;
-    }
+  withSalary(
+    salary: {
+      min: number;
+      max: number;
+      currency: string;
+      unit: string;
+      negotiable: boolean;
+    } | null,
+  ): this {
+    this.job.salary = salary;
+    return this;
+  }
 
-    withWorkTime(workTime: { from: string, to: string } | null): this {
-        this.job.workTime = workTime;
-        return this;
-    }
+  withWorkTime(workTime: { from: string; to: string } | null): this {
+    this.job.workTime = workTime;
+    return this;
+  }
 
-    withJobType(jobType: { styleClass: string; type: string }[]): this {
-        this.job.jobType = jobType;
-        return this;
-    }
+  withJobType(jobType: { styleClass: string; type: string }[]): this {
+    this.job.jobType = jobType;
+    return this;
+  }
 
-    withDestination(destination: { min: number; max: number } | null): this {
-        this.job.destination = destination;
-        return this;
-    }
+  withDestination(destination: { min: number; max: number } | null): this {
+    this.job.destination = destination;
+    return this;
+  }
 
-    withDatePosted(datePosted: Date): this {
-        this.job.datePosted = datePosted.toLocaleDateString("vi-VN");
-        return this;
-    }
+  withDatePosted(datePosted: Date): this {
+    this.job.datePosted = datePosted.toLocaleDateString('vi-VN');
+    return this;
+  }
 
-    withExpireDate(expireDate: Date): this {
-        this.job.expireDate = expireDate.toLocaleDateString("vi-VN");
-        return this;
-    }
+  withExpireDate(expireDate: Date): this {
+    this.job.expireDate = expireDate.toLocaleDateString('vi-VN');
+    return this;
+  }
 
-    withDescription(description: string): this {
-        this.job.description = description;
-        return this;
-    }
+  withDescription(description: string): this {
+    this.job.description = description;
+    return this;
+  }
 
-    withResponsibilities(responsibilities: string[]): this {
-        this.job.responsibilities = responsibilities;
-        return this;
-    }
+  withResponsibilities(responsibilities: string[]): this {
+    this.job.responsibilities = responsibilities;
+    return this;
+  }
 
-    withSkillAndExperience(skillAndExperience: string[]): this {
-        this.job.skillAndExperience = skillAndExperience;
-        return this;
-    }
+  withSkillAndExperience(skillAndExperience: string[]): this {
+    this.job.skillAndExperience = skillAndExperience;
+    return this;
+  }
 
-    withApplications(applications: number | null): this {
-        this.job.applications = applications;
-        return this;
-    }
+  withApplications(applications: number | null): this {
+    this.job.applications = applications;
+    return this;
+  }
 
-    withStatus(status: boolean ): this {
-        this.job.status = status;
-        return this;
-    }
+  withStatus(status: boolean): this {
+    this.job.status = status;
+    return this;
+  }
 
-    build(): JobResponseDto {
-        return this.job;
-    }
+  build(): JobResponseDto {
+    return this.job;
+  }
 }

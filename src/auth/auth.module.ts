@@ -9,16 +9,21 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { BcryptProvider } from './provider/bcrypt.provider';
 import { HashingProvider } from './provider/hashing.provider.js';
+import { ApplicationModule } from 'src/application/application.module';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, {
-    provide: HashingProvider,
-    useClass: BcryptProvider, // Using BcryptProviderTs as the implementation of HashingProviderTs
-  }],
+  providers: [
+    AuthService,
+    {
+      provide: HashingProvider,
+      useClass: BcryptProvider, // Using BcryptProviderTs as the implementation of HashingProviderTs
+    },
+  ],
   imports: [
     forwardRef(() => UserModule),
     forwardRef(() => CandidateModule),
+    forwardRef(() => ApplicationModule),
     CompanyModule,
     ConfigModule.forFeature(authConfig), // Importing the auth configuration
     JwtModule.registerAsync(authConfig.asProvider()), // Registering JWT module with async configuration

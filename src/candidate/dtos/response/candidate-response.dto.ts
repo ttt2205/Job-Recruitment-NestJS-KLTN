@@ -75,7 +75,7 @@ export class CandidateResponseDtoBuilder {
     this.candidate.name = name;
     return this;
   }
-  
+
   withBirthday(birthday: Date | null): this {
     this.candidate.birthday = birthday;
     return this;

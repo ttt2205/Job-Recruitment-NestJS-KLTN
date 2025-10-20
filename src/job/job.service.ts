@@ -159,7 +159,6 @@ export class JobService {
   async GetById(id: string) {
     try {
       const job = await this.jobModel.findById(id).exec();
-      console.log('job: ', job);
       if (!job) {
         throw new NotFoundException(`Không tìm thấy công việc với id = ${id}`);
       }

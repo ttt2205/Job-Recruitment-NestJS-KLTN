@@ -17,8 +17,11 @@ export class Application {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Job', required: true })
   jobId: mongoose.Types.ObjectId;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Resume', required: true })
-  resumeId: mongoose.Types.ObjectId;
+  @Prop({ type: String, required: true })
+  fileName: string;
+
+  @Prop({ type: String, required: false })
+  coverLetter?: string;
 
   @Prop({
     type: String,
