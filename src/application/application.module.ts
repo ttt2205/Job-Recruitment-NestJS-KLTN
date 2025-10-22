@@ -6,6 +6,7 @@ import { Application, ApplicationSchema } from './application.schema';
 import { JobModule } from 'src/job/job.module';
 import { CandidateModule } from 'src/candidate/candidate.module';
 import { ResumeModule } from 'src/resume/resume.module';
+import { CompanyModule } from 'src/company/company.module';
 
 @Module({
   controllers: [ApplicationController],
@@ -17,6 +18,8 @@ import { ResumeModule } from 'src/resume/resume.module';
     JobModule,
     forwardRef(() => CandidateModule),
     forwardRef(() => ResumeModule),
+    JobModule,
+    CompanyModule,
   ],
   exports: [ApplicationService],
 })

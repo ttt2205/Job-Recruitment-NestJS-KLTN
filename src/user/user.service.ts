@@ -77,9 +77,8 @@ export class UserService {
             language: [],
             educationLevel: '',
             socialMedias: [],
-            status: false,
           };
-          await this.candidateService.CreateService(emptyCandidateProfile);
+          await this.candidateService.createNewCandidate(emptyCandidateProfile);
           break;
         }
 
@@ -100,7 +99,7 @@ export class UserService {
             website: '',
             socialMedias: [],
           };
-          await this.companyService.CreateService(emptyCompanyProfile);
+          await this.companyService.createNewCompany(emptyCompanyProfile);
           break;
         }
 

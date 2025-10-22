@@ -78,7 +78,7 @@ export class JobController {
   @Get('detail/:id')
   @HttpCode(200)
   async GetJobById(@Param('id') id: string) {
-    const job = await this.jobService.GetById(id);
+    const job = await this.jobService.getById(id);
 
     let companyDto: Partial<CompanyResponseDto> | null = null;
     if (job && job.companyId) {

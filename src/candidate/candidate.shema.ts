@@ -1,4 +1,3 @@
-
 // user.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
@@ -15,13 +14,12 @@ class UserRef {
 
 @Schema({ timestamps: true })
 export class Candidate {
-
   _id: mongoose.Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   userId: mongoose.Types.ObjectId;
-  
-  @Prop({ required: true })
+
+  @Prop({ required: false })
   name: string;
 
   @Prop({ required: false })
@@ -74,7 +72,7 @@ export class Candidate {
 
   @Prop({ required: false })
   educationLevel?: string;
-  
+
   @Prop({ required: false })
   socialMedias: SocilMedia[];
 

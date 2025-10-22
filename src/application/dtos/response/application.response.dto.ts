@@ -1,7 +1,10 @@
+import { JobResponseDto } from 'src/job/dtos/response/job-response.dto';
+
 export class ApplicationResponseDto {
   id: string;
   candidateId: string;
   jobId: string;
+  job?: Partial<JobResponseDto>;
   fileName: string;
   coverLetter?: string;
   status: 'PENDING' | 'REVIEWED' | 'ACCEPTED' | 'REJECTED';
@@ -43,6 +46,11 @@ export class ApplicationResponseDtoBuilder {
 
   withCoverLetter(coverLetter: string): this {
     this.application.coverLetter = coverLetter;
+    return this;
+  }
+
+  withJob(job: Partial<JobResponseDto>): this {
+    this.application.job = job;
     return this;
   }
 

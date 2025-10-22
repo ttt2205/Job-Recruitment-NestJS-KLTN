@@ -23,7 +23,7 @@ export class CandidateService {
     private readonly candidateAboutService: CandidateAboutService,
   ) {}
 
-  async CreateService(data: CreateCandidateDto) {
+  async createNewCandidate(data: CreateCandidateDto) {
     try {
       const existCandidate = await this.candidateModel.findOne({
         userId: data.userId,
@@ -36,7 +36,10 @@ export class CandidateService {
           HttpStatus.CONFLICT,
         );
       }
-      const candidate = await this.candidateModel.create(data);
+      const candidate = await this.candidateModel.create({
+        ...data,
+        status: true,
+      });
       return candidate;
     } catch (error) {
       handleServiceError(error, 'CandidateService.CreateService');

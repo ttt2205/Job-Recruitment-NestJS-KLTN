@@ -35,8 +35,8 @@ export class JobResponseDto {
     max: number;
   } | null;
   category: string;
-  datePosted: string;
-  expireDate: string;
+  datePosted: Date | null;
+  expireDate: Date | null;
   experience: string;
   totalSalary: {
     min: number;
@@ -136,12 +136,12 @@ export class JobResponseDtoBuilder {
   }
 
   withDatePosted(datePosted: Date): this {
-    this.job.datePosted = datePosted.toLocaleDateString('vi-VN');
+    this.job.datePosted = datePosted;
     return this;
   }
 
   withExpireDate(expireDate: Date): this {
-    this.job.expireDate = expireDate.toLocaleDateString('vi-VN');
+    this.job.expireDate = expireDate;
     return this;
   }
 

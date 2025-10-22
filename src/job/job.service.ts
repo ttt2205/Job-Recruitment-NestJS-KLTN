@@ -156,7 +156,7 @@ export class JobService {
     }
   }
 
-  async GetById(id: string) {
+  async getById(id: string) {
     try {
       const job = await this.jobModel.findById(id).exec();
       if (!job) {
@@ -164,7 +164,7 @@ export class JobService {
       }
       return job;
     } catch (error) {
-      handleServiceError(error, 'JobService.GetById');
+      handleServiceError(error, 'JobService.getById');
     }
   }
 

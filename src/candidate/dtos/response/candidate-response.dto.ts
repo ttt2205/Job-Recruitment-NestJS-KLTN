@@ -13,7 +13,7 @@ export class CandidateResponseDto {
   tags: string[]; // === skills
   category: string;
   gender: string;
-  createdAt: string;
+  createdAt: Date | null;
   experience: number;
   qualification: string; // == educationLevel
   birthday: Date | null;
@@ -112,11 +112,12 @@ export class CandidateResponseDtoBuilder {
   }
 
   withCreatedAt(createdAt: Date): this {
-    this.candidate.createdAt = createdAt.toLocaleDateString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
+    // this.candidate.createdAt = createdAt.toLocaleDateString('vi-VN', {
+    //   day: '2-digit',
+    //   month: '2-digit',
+    //   year: 'numeric',
+    // });
+    this.candidate.createdAt = createdAt;
     return this;
   }
 
