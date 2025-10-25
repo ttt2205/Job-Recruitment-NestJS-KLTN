@@ -27,10 +27,14 @@ export class CreateJobDto {
   @IsOptional()
   description?: string;
 
+  // @IsOptional()
+  // @IsArray()
+  // @Type(() => JobType)
+  // jobType?: JobType[]; // ex: Fulltime, Intern Ship
+
   @IsOptional()
   @IsArray()
-  @Type(() => JobType)
-  jobType?: JobType[]; // ex: Fulltime, Intern Ship
+  jobType?: string[]; // ex: Fulltime, Intern Ship
 
   @IsObject()
   @IsOptional()

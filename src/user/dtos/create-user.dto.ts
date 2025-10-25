@@ -13,8 +13,8 @@ export class CreateUserDto {
 
   @IsNotEmpty({ message: 'Vui lòng cung cấp loại cho tài khoản' })
   @IsString()
-  @IsIn(['admin', 'company', 'candidate'], {
-    message: 'Loại người dùng chỉ được là: admin, company hoặc candidate!',
+  @IsIn(['admin', 'company', 'employer'], {
+    message: 'Loại người dùng chỉ được là: admin, employer hoặc candidate!',
   })
-  type: string; // admin, company, candidate
+  role: string; // admin, company, employer
 }

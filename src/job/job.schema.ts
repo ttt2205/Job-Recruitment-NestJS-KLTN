@@ -35,8 +35,11 @@ export class Job {
   @Prop({ required: false })
   description?: string;
 
-  @Prop({ type: [JobTypeSchema], required: false })
-  jobType?: JobType[];
+  // @Prop({ type: [JobTypeSchema], required: false })
+  // jobType?: JobType[];
+
+  @Prop({ required: false })
+  jobType?: string[];
 
   @Prop({ type: SalaryTemplate, required: false })
   salary?: SalaryTemplate;

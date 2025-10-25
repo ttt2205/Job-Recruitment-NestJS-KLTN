@@ -53,9 +53,9 @@ export class UserService {
       // 2️⃣ Lưu vào database
       const savedUser = await createdUser.save();
 
-      // 3️⃣ Kiểm tra type để xử lý thêm
-      switch (savedUser.type) {
-        case 'candidate': {
+      // 3️⃣ Kiểm tra role để xử lý thêm
+      switch (savedUser.role) {
+        case process.env.ROLE_CANDIDATE: {
           const emptyCandidateProfile: CreateCandidateDto = {
             userId: savedUser._id.toString(), // ID người dùng mới tạo
             name: '', // để ứng viên cập nhật sau
@@ -82,7 +82,7 @@ export class UserService {
           break;
         }
 
-        case 'company': {
+        case process.env.ROLE_EMPLOYER: {
           const emptyCompanyProfile: CreateCompanyDto = {
             userId: savedUser._id.toString(),
             email: '', // sẽ lấy từ user hoặc để trống

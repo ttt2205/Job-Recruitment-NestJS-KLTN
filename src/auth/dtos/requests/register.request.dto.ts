@@ -10,7 +10,7 @@ export class RegisterRequestDto {
   @IsNotEmpty({ message: 'Không xác định được loại người dùng!' })
   @IsString()
   @IsIn(['company', 'candidate'], {
-    message: 'Loại người dùng chỉ được là: admin, company hoặc candidate!',
+    message: 'Quyền người dùng chỉ được là: admin, company hoặc candidate!',
   })
-  type: string;
+  role: string;
 }

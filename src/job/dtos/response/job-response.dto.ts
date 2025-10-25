@@ -24,10 +24,11 @@ export class JobResponseDto {
   quantity: number;
   country: string;
   city: string;
-  jobType: {
-    styleClass: string;
-    type: string;
-  }[];
+  // jobType: {
+  //   styleClass: string;
+  //   type: string;
+  // }[];
+  jobType: string[];
   website: string | null;
   tag: string;
   destination: {
@@ -125,7 +126,12 @@ export class JobResponseDtoBuilder {
     return this;
   }
 
-  withJobType(jobType: { styleClass: string; type: string }[]): this {
+  // withJobType(jobType: { styleClass: string; type: string }[]): this {
+  //   this.job.jobType = jobType;
+  //   return this;
+  // }
+
+  withJobType(jobType: string[]): this {
     this.job.jobType = jobType;
     return this;
   }

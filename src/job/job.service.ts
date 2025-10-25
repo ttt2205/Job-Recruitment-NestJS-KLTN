@@ -71,7 +71,7 @@ export class JobService {
 
       // Type condition
       const typeCondition = type
-        ? { 'jobType.type': { $regex: type, $options: 'i' } }
+        ? { jobType: { $regex: type, $options: 'i' } }
         : {};
 
       // Experience condition

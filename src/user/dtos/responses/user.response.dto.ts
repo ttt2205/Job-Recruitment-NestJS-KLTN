@@ -1,7 +1,7 @@
 export class UserResponseDto {
   id: string;
   email: string;
-  type: string;
+  role: string;
   status: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -24,8 +24,8 @@ export class UserResponseDtoBuilder {
     this.user.email = email;
     return this;
   }
-  withType(type: string): this {
-    this.user.type = type;
+  withRole(role: string): this {
+    this.user.role = role;
     return this;
   }
   withStatus(status: boolean): this {

@@ -63,12 +63,12 @@ export class AuthController {
     const user = await this.authService.registerAccount(
       req.email,
       req.password,
-      req.type,
+      req.role,
     );
     const userDto = UserResponseDto.builder()
       .withId(user._id.toString())
       .withEmail(user.email)
-      .withType(user.type)
+      .withRole(user.role)
       .withStatus(user.status)
       .withCreatedAt(user.createdAt)
       .withUpdatedAt(user.updatedAt)
@@ -118,7 +118,7 @@ export class AuthController {
     const res = await this.authService.getAccount(token);
     let responseDto = {};
     // Map data to dto and response for client
-    if (res.type === 'candidate' && res.data) {
+    if (res.role === process.env.ROLE_CANDIDATE && res.data) {
       const candidate = res.data as Candidate;
       responseDto = CandidateResponseDto.builder()
         .withId(candidate._id.toString())
@@ -129,7 +129,7 @@ export class AuthController {
         .build();
     }
 
-    if (res.type === 'company' && res.data) {
+    if (res.role === process.env.ROLE_EMPLOYER && res.data) {
       const company = res.data as Company;
       responseDto = CompanyResponseDto.builder()
         .withId(company._id.toString())
@@ -141,16 +141,17 @@ export class AuthController {
         .build();
     }
     return {
+      success: true,
       statusCode: HttpStatus.OK,
       message: 'Get account successful!',
       data: responseDto
         ? {
             userId: res.userId,
             emailLogin: res.email,
-            type: res.type,
+            role: res.role,
             ...responseDto,
           }
-        : { userId: res.userId, emailLogin: res.email, type: res.type },
+        : { userId: res.userId, emailLogin: res.email, role: res.role },
     };
   }
 

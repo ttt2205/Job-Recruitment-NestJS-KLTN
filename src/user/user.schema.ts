@@ -22,7 +22,7 @@ export class User {
   password: string;
 
   @Prop({ required: true })
-  type: string; // admin, company, candidate
+  role: string; // admin, company, employer
 
   @Prop({ default: true })
   status: boolean;

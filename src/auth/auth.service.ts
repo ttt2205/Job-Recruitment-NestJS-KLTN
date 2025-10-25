@@ -57,7 +57,7 @@ export class AuthService {
         {
           sub: user._id,
           email: email,
-          type: user.type,
+          role: user.role,
         },
         {
           secret: this.authConfiguration.secret,
@@ -76,11 +76,11 @@ export class AuthService {
   async getAccount(token: string): Promise<{
     userId: string;
     email: string;
-    type: 'candidate' | 'company' | 'admin';
+    role: 'candidate' | 'employer' | 'admin';
     data: Company | Candidate | null;
   }> {
     try {
-      // payload sẽ có cấu trúc giống như khi bạn sign: { sub, email, type }
+      // payload sẽ có cấu trúc giống như khi bạn sign: { sub, email, role }
       const payload = await this.jwtService.verifyAsync(token, {
         secret: this.authConfiguration.secret,
         audience: this.authConfiguration.audience,
@@ -89,22 +89,23 @@ export class AuthService {
 
       const id = payload.sub;
       const email = payload.email;
-      const type = payload.type;
+      const role = payload.role;
 
       let data: Company | Candidate | null = null;
 
-      if (type === 'candidate') {
+      console.log('process.env.ROLE_CANDIDATE: ', process.env.ROLE_CANDIDATE);
+      if (role === process.env.ROLE_CANDIDATE) {
         data = await this.candidateService.getCandidateByUserIdNullable(id);
-      } else if (type === 'company') {
+      } else if (role === process.env.ROLE_EMPLOYER) {
         data = await this.companyService.getCompanyByUserIdNullable(id);
       } else {
-        throw new Error(`Unsupported user type: ${type}`);
+        throw new Error(`Unsupported user role: ${role}`);
       }
 
       return {
         userId: id,
         email,
-        type,
+        role,
         data,
       };
     } catch (error) {
@@ -120,12 +121,12 @@ export class AuthService {
     }
   }
 
-  async registerAccount(email: string, password: string, type: string) {
+  async registerAccount(email: string, password: string, role: string) {
     try {
       const createdUser = await this.userService.createUser({
         email,
         password,
-        type,
+        role,
       });
       return createdUser;
     } catch (error) {
