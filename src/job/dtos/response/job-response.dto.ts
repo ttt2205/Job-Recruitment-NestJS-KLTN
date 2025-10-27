@@ -9,6 +9,7 @@ export class JobResponseDto {
   description: string;
   responsibilities: string[];
   skillAndExperience: string[];
+  level: string | null;
   salary: {
     min: number;
     max: number;
@@ -30,7 +31,7 @@ export class JobResponseDto {
   // }[];
   jobType: string[];
   website: string | null;
-  tag: string;
+  skills: string[];
   destination: {
     min: number;
     max: number;
@@ -38,7 +39,7 @@ export class JobResponseDto {
   category: string;
   datePosted: Date | null;
   expireDate: Date | null;
-  experience: string;
+  experience: number;
   totalSalary: {
     min: number;
     max: number;
@@ -70,6 +71,11 @@ export class JobResponseDtoBuilder {
 
   withWebsite(website: string | null): this {
     this.job.website = website;
+    return this;
+  }
+
+  withLevel(level: string | null): this {
+    this.job.level = level;
     return this;
   }
 
@@ -121,6 +127,11 @@ export class JobResponseDtoBuilder {
     return this;
   }
 
+  withSkills(skills: string[]): this {
+    this.job.skills = skills;
+    return this;
+  }
+
   withWorkTime(workTime: { from: string; to: string } | null): this {
     this.job.workTime = workTime;
     return this;
@@ -148,6 +159,11 @@ export class JobResponseDtoBuilder {
 
   withExpireDate(expireDate: Date): this {
     this.job.expireDate = expireDate;
+    return this;
+  }
+
+  withExperience(experience: number): this {
+    this.job.experience = experience;
     return this;
   }
 

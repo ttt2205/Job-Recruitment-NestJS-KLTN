@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
   ValidationPipe,
 } from '@nestjs/common';
@@ -121,13 +122,16 @@ export class JobController {
         .withCity(job?.city || '')
         .withLocation(job.location)
         .withLogo(companyDto?.logo || '')
+        .withLevel(job.level || '')
         .withWorkTime({
           from: job?.workTime?.from || '',
           to: job?.workTime?.to || '',
         })
+        .withSkills(job?.skills || [])
         .withSalary(job.salary || null)
         .withExpireDate(job.expirationDate)
         .withDatePosted(job.createdAt)
+        .withExperience(job.experience || 0)
         .withDescription(job.description || '')
         .withResponsibilities(
           job.responsibilities || ['Không có mô tả về trách nhiệm!'],
@@ -196,6 +200,51 @@ export class JobController {
     @Param('id') id: string,
     @Body() data: UpdateJobDto,
   ) {
+    const job = await this.jobService.updatePartition(id, data);
+    const company = job
+      ? await this.companyService.findById(job.companyId.toString())
+      : null;
+    const responseDto = job
+      ? JobResponseDto.builder()
+          .withId(job._id.toString())
+          .withDestination(null)
+          .withLogo(company?.logo || '')
+          .withJobTitle(job.name)
+          .withJobType(job?.jobType || [])
+          .withQuantity(job?.quantity || 0)
+          .withIndustry(job?.industry || '')
+          .withCountry(job?.country || '')
+          .withCity(job?.city || '')
+          .withLocation(job.location)
+          .withWorkTime({
+            from: job?.workTime?.from || '',
+            to: job?.workTime?.to || '',
+          })
+          .withSalary(job.salary || null)
+          .withExpireDate(job.expirationDate)
+          .withDatePosted(job.createdAt)
+          .withDescription(job.description || '')
+          .withResponsibilities(
+            job.responsibilities || ['Không có mô tả về trách nhiệm!'],
+          )
+          .withSkillAndExperience(
+            job.skillAndExperience || [
+              'Không có mô tả về kỹ năng và kinh nghiệm!',
+            ],
+          )
+          .build()
+      : {};
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Cập nhật công việc thành công!',
+      data: responseDto || {},
+    };
+  }
+
+  @Put(':id')
+  @HttpCode(200)
+  async UpdateJob(@Param('id') id: string, @Body() data: UpdateJobDto) {
     const job = await this.jobService.updatePartition(id, data);
     const company = job
       ? await this.companyService.findById(job.companyId.toString())
